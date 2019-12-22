@@ -183,7 +183,7 @@ def pdfparsing(list_so, xml_data, headers, cookie_str, i):
     headers['pdfpath'] = 'D:\RDM_Download\\PDF\\'  # 指定下载PDF的保存路径
     if not os.path.exists(headers['pdfpath']):  # 如果保存文件夹不存在就创建文件夹
         os.makedirs(headers['pdfpath'])
-    headers['pdfpath'] = headers['pdfpath'] + so_name  # 指定下载文件pdf完整地址
+    headers['pdfpath'] = headers['pdfpath'] + so_no  # 指定下载文件pdf完整地址
     # http://172.168.5.151:81/bpm/FileUpload/DownloadFile.aspx?md=task&tid=85408&did=&file=SO191127037+X099%u6280%u672f%u786e%u8ba4%u4e66.pdf(技术确认书名称)
     '''  方案一（存在url转码问题，即使将url转化成上面一行的url，使用python request.get方法时，可通过网抓工具fiddle发现url中%被python转换了，已经不是正确的url）：
     spec_unicode = ''
