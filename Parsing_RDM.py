@@ -22,7 +22,7 @@ def pdf_image(pdf_name):
         page = pdf[pg]  # 获得每一页的对象
         trans = fitz.Matrix(1.0, 1.0).preRotate(0)
         pm = page.getPixmap(matrix=trans, alpha=False)  # 获得每一页的流对象
-        pm.writePNG(dir_name + os.sep + base_name[:-4] + '_' + '{:0>3d}.png'.format(pg + 1))  # 保存图片
+        pm.writePNG(dir_name + os.sep + base_name + '.png'.format(pg + 1))  # 保存图片
     pdf.close()
 
 
@@ -43,7 +43,7 @@ def gethtmltext(Request_method, url, cookie_str, **Others_data):  # Others_data�
         if 'pdfpath' in Others_data:  # 下载文件
             if Others_data['pdfpath'] != "":
                 try:
-                    path = Others_data['pdfpath']
+                    path = Others_data['pdfpath'] + ".pdf"
                     Others_data.pop('pdfpath')
                     url = quote(url, safe=string.printable)
                     resp = requests.get(url, headers=Others_data, cookies=cookies, timeout=30)
