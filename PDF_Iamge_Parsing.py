@@ -241,6 +241,63 @@ def Img_Roate(img_path):
     cv2.waitKey(0)
     return image
 
+def Getcells(Net_img,contours):
+    small_rects = []
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if area < 10: continue
+        approx = cv2.approxPolyDP(cnt, 4, True)  # 3
+        x, y, w, h = cv2.boundingRect(approx)
+        rect = [x, y, w, h]
+        # cv.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 3)
+        roi = Net_img[y:y + h, x:x + w]
+        joints_contours, joints_hierarchy = cv2.findContours(roi, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        # print len(joints_contours)
+        # if h < 80 and h > 20 and w > 10 and len(joints_contours)<=4:
+        if  h > 10 and w > 10 and len(joints_contours) <= 15:  # important
+            small_rects.append(rect)
+
+    #sorted(iterable, cmp=None, key=None, reverse=False) 函数对所有可迭代的对象进行排序操作
+    # iterable :   可迭代对象   ；
+    # cmp      :   比较的函数，这个具有两个参数，参数的值都是从可迭代对象中取出，此函数必须遵守的规则为，大于则返回1，小于则返回-1，等于则返回0
+    # key      :   主要是用来进行比较的元素，只有一个参数，具体的函数的参数就是取自于可迭代对象中，指定可迭代对象中的一个元素来进行排序
+    # reverse  :   排序规则，reverse = True 降序 ， reverse = False 升序（默认）
+    #lambda：这是Python支持一种有趣的语法，它允许你快速定义单行的最小函数，可以用在任何需要函数的地方,并且该函数无函数名，即匿名函数
+    #先按照第二个元素再按照第一个元素排序,即先排y，后排x，从上往下，从左往右排序
+    small_rects = sorted(small_rects,key=lambda x:(x[1],x[0]))
+    small_rects = np.array(small_rects)
+    i= 1
+    flag =True
+    while i < len(small_rects)-1:
+        if flag == True:
+            count = 0
+            Sum = 0
+        else:
+            count = 1
+            Sum = small_rects[i-1,1]
+        while True:
+            if small_rects[i , 1] - small_rects[i-1, 1] < 3 :
+                count += 1
+                Sum += small_rects[i,1]
+                i += 1
+            else:
+                if count != 0:
+                    average = int(Sum / count)
+                    small_rects[i - count:i, 1] = average
+                    flag = False
+                i += 1
+                break
+    small_rects = sorted(small_rects, key=lambda x: (x[1], x[0]))
+
+    for Rect in small_rects:
+        x,y,w,h = Rect
+        print(x,y)
+        cv2.rectangle(dst, (x, y), (x + w, y + h), (0,0,255), 2)
+        cv2.namedWindow('Net', cv2.WINDOW_NORMAL)
+        cv2.imshow('Net',dst)
+        cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
 if __name__ == '__main__':
     # 文件名以及路径不能存在中文字符
     Image_Path = "D:/RDM_Download/PDF_Image/SO200115048.png"
@@ -272,36 +329,6 @@ if __name__ == '__main__':
     gray_not = cv2.bitwise_not(gray)
     AdaptiveThreshold = cv2.adaptiveThreshold(gray_not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
     Net_img,contours = FindContours(AdaptiveThreshold,False)
+    cells = Getcells(Net_img,contours)
 
-    small_rects = []
-    for cnt in contours:
-        area = cv2.contourArea(cnt)
-        if area < 10: continue
-        approx = cv2.approxPolyDP(cnt, 4, True)  # 3
-        x, y, w, h = cv2.boundingRect(approx)
-        rect = (x, y, w, h)
-        # cv.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 3)
-        roi = Net_img[y:y + h, x:x + w]
-        joints_contours, joints_hierarchy = cv2.findContours(roi, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-        # print len(joints_contours)
-        # if h < 80 and h > 20 and w > 10 and len(joints_contours)<=4:
-        if  h > 10 and w > 10 and len(joints_contours) <= 15:  # important
-            small_rects.append(rect)
 
-    #sorted(iterable, cmp=None, key=None, reverse=False) 函数对所有可迭代的对象进行排序操作
-    # iterable :   可迭代对象   ；
-    # cmp      :   比较的函数，这个具有两个参数，参数的值都是从可迭代对象中取出，此函数必须遵守的规则为，大于则返回1，小于则返回-1，等于则返回0
-    # key      :   主要是用来进行比较的元素，只有一个参数，具体的函数的参数就是取自于可迭代对象中，指定可迭代对象中的一个元素来进行排序
-    # reverse  :   排序规则，reverse = True 降序 ， reverse = False 升序（默认）
-    #lambda：这是Python支持一种有趣的语法，它允许你快速定义单行的最小函数，可以用在任何需要函数的地方,并且该函数无函数名，即匿名函数
-    #先按照第二个元素再按照第一个元素排序,即先排y，后排x，从上往下，从左往右排序
-    small_rects = sorted(small_rects,key=lambda x:(x[1],x[0]))
-
-    for Rect in small_rects:
-        x,y,w,h = Rect
-        print(x,y)
-        cv2.rectangle(dst, (x, y), (x + w, y + h), (0,0,255), 2)
-        cv2.namedWindow('Net', cv2.WINDOW_NORMAL)
-        cv2.imshow('Net',dst)
-        cv2.waitKey(0)
-    cv2.destroyAllWindows()
