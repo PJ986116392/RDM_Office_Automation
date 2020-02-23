@@ -243,6 +243,8 @@ def Img_Roate(img_path):
 
 def Getcells(Net_img,contours):
     small_rects = []
+    cv2.imshow('net', Net_img)
+    cv2.waitKey(0)
     for cnt in contours:
         area = cv2.contourArea(cnt)
         if area < 10: continue
@@ -288,15 +290,49 @@ def Getcells(Net_img,contours):
                 i += 1
                 break
     small_rects = sorted(small_rects, key=lambda x: (x[1], x[0]))
-
+    cell = []
+    cells = []
     for Rect in small_rects:
         x,y,w,h = Rect
-        print(x,y)
-        cv2.rectangle(dst, (x, y), (x + w, y + h), (0,0,255), 2)
-        cv2.namedWindow('Net', cv2.WINDOW_NORMAL)
-        cv2.imshow('Net',dst)
-        cv2.waitKey(0)
+        cell = dst[y:y+h,x:x+w]
+        cells.append(cell)
+        #cv2.rectangle(dst, (x, y), (x + w, y + h), (0,255,0), 1)
+        #cv2.namedWindow('Net', cv2.WINDOW_NORMAL)
+        #cv2.imshow('Net',dst)
+        #cv2.waitKey(0)
     cv2.destroyAllWindows()
+    return cells
+
+def checkbox(cell):
+    # 返回单元格复选框坐标和结果
+    result = False
+    gray = cv2.cvtColor(cell, cv2.COLOR_BGR2GRAY)
+    # Gauss = cv2.GaussianBlur(gray,(3,3),0)
+
+    Gauss_Not = cv2.bitwise_not(gray)
+    AdaptiveThreshold = cv2.adaptiveThreshold(Gauss_Not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
+    #cv2.imshow('gass', AdaptiveThreshold)
+
+    Kenner = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    erode = cv2.erode(AdaptiveThreshold, Kenner)  # 腐蚀图像,黑色加强
+    dilate = cv2.dilate(erode, Kenner)
+    contours, hierarchy = cv2.findContours(dilate, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
+    checkbox = []
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if area < 20: continue
+        epsilon = 0.1 * cv2.arcLength(cnt, True)
+        approx = cv2.approxPolyDP(cnt, epsilon, True)  # 获取近似轮廓
+        if len(approx) == 4:
+            x, y, w, h = cv2.boundingRect(approx)
+            checkbox.append([x, y, w, h])
+    # 重新排序
+    if len(checkbox) > 0:
+        result = True
+        checkbox = sorted(checkbox, key=lambda x: (x[1], x[0]))
+
+    return result,checkbox
 
 if __name__ == '__main__':
     # 文件名以及路径不能存在中文字符
@@ -330,5 +366,17 @@ if __name__ == '__main__':
     AdaptiveThreshold = cv2.adaptiveThreshold(gray_not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
     Net_img,contours = FindContours(AdaptiveThreshold,False)
     cells = Getcells(Net_img,contours)
+
+    #
+    for cell in cells:
+        result,checkbox = checkbox(cell)
+
+        if result == True:                      #找到复选框,对复选框后面内容进行识别
+            print('x,y')
+        else:                                   #无复选框，直接识别单元格内容
+            print('x,y')
+
+
+
 
 
