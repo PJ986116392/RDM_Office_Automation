@@ -1,14 +1,13 @@
-import cv2
+import cv2,sys
 import numpy as np
 import math
 from imutils.perspective import four_point_transform
 import imutils
 
-def FindContours(AdaptiveThreshold,ExternalContours):
+def FindContours(AdaptiveThreshold,ExternalContours,scale):
 
     horizontal = AdaptiveThreshold.copy()
     vertical = AdaptiveThreshold.copy()
-    scale = 20
 
     horizontalSize = int(horizontal.shape[1]/scale)
     horizontalStructure = cv2.getStructuringElement(cv2.MORPH_RECT, (horizontalSize, 1))
@@ -70,9 +69,10 @@ def FindContours(AdaptiveThreshold,ExternalContours):
     #cv2.waitKey(0)
     #cv2.destroyAllWindows()
     #=============================================================
-    return Net_img,contours
+    return Net_img,contours,mask
 
 def get_Affine_Location(src_img,contours):
+    dst = []
     contours = sorted(contours, key=cv2.contourArea, reverse=True)          #根据闭合图形面积大小重新排序，根据面积进行降序
     for cnt in contours:
         area0 = cv2.contourArea(cnt)
@@ -241,10 +241,50 @@ def Img_Roate(img_path):
     cv2.waitKey(0)
     return image
 
+def Listsort(list,start,end,value):
+    # 输入列表格式[x,y,w,h]
+    # 先按照第二个元素再按照第一个元素排序,即先排y，后排x，从上往下，从左往右排序
+    #sorted(iterable, cmp=None, key=None, reverse=False) 函数对所有可迭代的对象进行排序操作
+    # iterable :   可迭代对象   ；
+    # cmp      :   比较的函数，这个具有两个参数，参数的值都是从可迭代对象中取出，此函数必须遵守的规则为，大于则返回1，小于则返回-1，等于则返回0
+    # key      :   主要是用来进行比较的元素，只有一个参数，具体的函数的参数就是取自于可迭代对象中，指定可迭代对象中的一个元素来进行排序
+    # reverse  :   排序规则，reverse = True 降序 ， reverse = False 升序（默认）
+    #lambda：这是Python支持一种有趣的语法，它允许你快速定义单行的最小函数，可以用在任何需要函数的地方,并且该函数无函数名，即匿名函数
+    list = sorted(list, key=lambda x: (x[1], x[0]))
+    list = np.array(list)
+    i = start
+    flag = True
+    while i < end:
+        if flag == True:
+            count = 0
+            Sum = 0
+        else:
+            count = 1
+            Sum = list[i - 1, 1]
+        while True:
+            if list[i, 1] - list[i - 1, 1] < value :
+                count += 1
+                Sum += list[i, 1]
+                i += 1
+                if i == end :
+                    average = int(Sum / count)
+                    list[i - count:i, 1] = average
+                    flag = False
+                    break
+            else:
+                if count != 0:
+                    average = int(Sum / count)
+                    list[i - count:i, 1] = average
+                    flag = False
+                i += 1
+                break
+    list = sorted(list, key=lambda x: (x[1], x[0]))
+    return list
+
 def Getcells(Net_img,contours):
     small_rects = []
-    cv2.imshow('net', Net_img)
-    cv2.waitKey(0)
+    #cv2.imshow('net', Net_img)
+    #cv2.waitKey(0)
     for cnt in contours:
         area = cv2.contourArea(cnt)
         if area < 10: continue
@@ -259,65 +299,34 @@ def Getcells(Net_img,contours):
         if  h > 10 and w > 10 and len(joints_contours) <= 15:  # important
             small_rects.append(rect)
 
-    #sorted(iterable, cmp=None, key=None, reverse=False) 函数对所有可迭代的对象进行排序操作
-    # iterable :   可迭代对象   ；
-    # cmp      :   比较的函数，这个具有两个参数，参数的值都是从可迭代对象中取出，此函数必须遵守的规则为，大于则返回1，小于则返回-1，等于则返回0
-    # key      :   主要是用来进行比较的元素，只有一个参数，具体的函数的参数就是取自于可迭代对象中，指定可迭代对象中的一个元素来进行排序
-    # reverse  :   排序规则，reverse = True 降序 ， reverse = False 升序（默认）
-    #lambda：这是Python支持一种有趣的语法，它允许你快速定义单行的最小函数，可以用在任何需要函数的地方,并且该函数无函数名，即匿名函数
-    #先按照第二个元素再按照第一个元素排序,即先排y，后排x，从上往下，从左往右排序
-    small_rects = sorted(small_rects,key=lambda x:(x[1],x[0]))
-    small_rects = np.array(small_rects)
-    i= 1
-    flag =True
-    while i < len(small_rects)-1:
-        if flag == True:
-            count = 0
-            Sum = 0
-        else:
-            count = 1
-            Sum = small_rects[i-1,1]
-        while True:
-            if small_rects[i , 1] - small_rects[i-1, 1] < 3 :
-                count += 1
-                Sum += small_rects[i,1]
-                i += 1
-            else:
-                if count != 0:
-                    average = int(Sum / count)
-                    small_rects[i - count:i, 1] = average
-                    flag = False
-                i += 1
-                break
-    small_rects = sorted(small_rects, key=lambda x: (x[1], x[0]))
+    small_rects = Listsort(small_rects,1,len(small_rects)-1,3)
+
     cell = []
     cells = []
     for Rect in small_rects:
         x,y,w,h = Rect
         cell = dst[y:y+h,x:x+w]
         cells.append(cell)
-        #cv2.rectangle(dst, (x, y), (x + w, y + h), (0,255,0), 1)
+        cv2.rectangle(dst, (x, y), (x + w, y + h), (0,255,0), 1)
         #cv2.namedWindow('Net', cv2.WINDOW_NORMAL)
-        #cv2.imshow('Net',dst)
-        #cv2.waitKey(0)
+        cv2.imshow('Net',dst)
+        cv2.waitKey(0)
     cv2.destroyAllWindows()
     return cells
 
-def checkbox(cell):
-    # 返回单元格复选框坐标和结果
+def checkboxText(cell):
     result = False
     gray = cv2.cvtColor(cell, cv2.COLOR_BGR2GRAY)
     # Gauss = cv2.GaussianBlur(gray,(3,3),0)
-
+    cv2.imshow('cell',cell)
     Gauss_Not = cv2.bitwise_not(gray)
     AdaptiveThreshold = cv2.adaptiveThreshold(Gauss_Not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
-    #cv2.imshow('gass', AdaptiveThreshold)
-
     Kenner = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     erode = cv2.erode(AdaptiveThreshold, Kenner)  # 腐蚀图像,黑色加强
     dilate = cv2.dilate(erode, Kenner)
     contours, hierarchy = cv2.findContours(dilate, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-
+    
+    
     checkbox = []
     for cnt in contours:
         area = cv2.contourArea(cnt)
@@ -326,17 +335,39 @@ def checkbox(cell):
         approx = cv2.approxPolyDP(cnt, epsilon, True)  # 获取近似轮廓
         if len(approx) == 4:
             x, y, w, h = cv2.boundingRect(approx)
-            checkbox.append([x, y, w, h])
+            Box = [x,y,w,h]
+            checkbox.append(Box)
+
     # 重新排序
     if len(checkbox) > 0:
         result = True
-        checkbox = sorted(checkbox, key=lambda x: (x[1], x[0]))
+        checkbox = Listsort(checkbox,1,len(checkbox)-1,2)
+        checkbox = np.array(checkbox)
+        check_num = len(checkbox)
+        CheckRange = []
+        for j,check in enumerate(checkbox):
+            x, y, w, h = check
+            CheckRange = cell[y: y+h, x:(x + 6 * w)]
+            '''
+            if j == check_num :                                    # 最后一个复选框时，直接记录推出for循环
+                CheckRange = cell[y:y+h,(x+w):(x+8*w)]
+                break                                 
+            if checkbox[j+1,1] - y < 2 :                           # 同一行
+                Next_x,Next_y,Next_w,Next_h = checkbox[j+1]
+                CheckRange = cell[y:y+h,x:Next_x]
+                #翻译
+                #CheckboxTxt = print()
+            else :            #最后一个复选框,或者某一行最后一个复选框
+                CheckRange = cell[y:y+h,x:]
+            '''
+            cv2.imshow('CheckRange',CheckRange)
+            cv2.waitKey(0)
 
-    return result,checkbox
+    return result,CheckRange
 
 if __name__ == '__main__':
     # 文件名以及路径不能存在中文字符
-    Image_Path = "D:/RDM_Download/PDF_Image/SO200115048.png"
+    Image_Path = "D:/RDM_Download/PDF_Image/SO200114006.png"
     #cutImg_path = 'D:\\RDM_Download\\PDF_Image'
     #cutImg_name = Image_Path.split('/')[-1][:-4]
 
@@ -345,6 +376,7 @@ if __name__ == '__main__':
     gray = cv2.cvtColor(src_img, cv2.COLOR_BGR2GRAY)
     Gauss = cv2.GaussianBlur(gray,(3,3),0)
     Gauss_Not = cv2.bitwise_not(Gauss)
+
     '''
     自适应阈值二值化函数cv2.adaptiveThreshold(src, maxval, thresh_type, type, Block Size, C)
     src          :  输入图，只能输入灰度图
@@ -357,24 +389,28 @@ if __name__ == '__main__':
     AdaptiveThreshold = cv2.adaptiveThreshold(Gauss_Not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
 
     #图片矫正,提取最大的矩形
-    Net_img,contours = FindContours(AdaptiveThreshold,True)                 #输入二值图
+    Net_img,contours,mask = FindContours(AdaptiveThreshold,True,20)                 #输入二值图
     dst = get_Affine_Location(src_img, contours)
-
+    if dst == [] :
+        print("图片矫正有误")
+        sys.exit(0)
     #识别表格中的矩形
     gray = cv2.cvtColor(dst,cv2.COLOR_BGR2GRAY)
     gray_not = cv2.bitwise_not(gray)
     AdaptiveThreshold = cv2.adaptiveThreshold(gray_not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
-    Net_img,contours = FindContours(AdaptiveThreshold,False)
+    Net_img,contours,mask = FindContours(AdaptiveThreshold,False,20)
     cells = Getcells(Net_img,contours)
+    #其中49，待定。不同技术确认书版本，49序号不一致
+    result, checkbox = checkboxText(cells[49])
 
     #
-    for cell in cells:
-        result,checkbox = checkbox(cell)
+    #for cell in cells:
+    #    result,checkbox = checkbox(cell)
 
-        if result == True:                      #找到复选框,对复选框后面内容进行识别
-            print('x,y')
-        else:                                   #无复选框，直接识别单元格内容
-            print('x,y')
+    #   if result == True:                      #找到复选框,对复选框后面内容进行识别
+    #        print('x,y')
+    #    else:                                   #无复选框，直接识别单元格内容
+    #        print('x,y')
 
 
 
