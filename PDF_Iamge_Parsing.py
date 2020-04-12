@@ -73,6 +73,7 @@ def FindContours(AdaptiveThreshold,ExternalContours,scale):
 
 def get_Affine_Location(src_img,contours):
     dst = []
+    Result = False
     contours = sorted(contours, key=cv2.contourArea, reverse=True)          #根据闭合图形面积大小重新排序，根据面积进行降序
     for cnt in contours:
         area0 = cv2.contourArea(cnt)
@@ -185,10 +186,11 @@ def get_Affine_Location(src_img,contours):
 
         if len(hull) == 4:
             dst = four_point_transform(src_img, hull.reshape(4,2))    # 矫正变换
+            Result = True
             #cv2.imshow("result", dst)
             #cv2.waitKey(0)
     #cv2.destroyAllWindows()
-    return  dst
+    return  Result,dst
 
 def Img_Roate(img_path):
     image = cv2.imread(img_path)
@@ -309,8 +311,8 @@ def Getcells(Net_img,contours):
         cells.append(cell)
         cv2.rectangle(dst, (x, y), (x + w, y + h), (0,255,0), 1)
         #cv2.namedWindow('Net', cv2.WINDOW_NORMAL)
-        cv2.imshow('Net',dst)
-        cv2.waitKey(0)
+        #cv2.imshow('Net',dst)
+        #cv2.waitKey(0)
     cv2.destroyAllWindows()
     return cells
 
@@ -362,12 +364,13 @@ def checkboxText(cell):
             '''
             cv2.imshow('CheckRange',CheckRange)
             cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     return result,CheckRange
 
 if __name__ == '__main__':
     # 文件名以及路径不能存在中文字符
-    Image_Path = "D:/RDM_Download/PDF_Image/SO200114006.png"
+    Image_Path = "D:/RDM_Download/PDF_Image/SO200115048.png"
     #cutImg_path = 'D:\\RDM_Download\\PDF_Image'
     #cutImg_name = Image_Path.split('/')[-1][:-4]
 
@@ -390,8 +393,8 @@ if __name__ == '__main__':
 
     #图片矫正,提取最大的矩形
     Net_img,contours,mask = FindContours(AdaptiveThreshold,True,20)                 #输入二值图
-    dst = get_Affine_Location(src_img, contours)
-    if dst == [] :
+    Result,dst = get_Affine_Location(src_img, contours)
+    if not Result :
         print("图片矫正有误")
         sys.exit(0)
     #识别表格中的矩形
@@ -400,8 +403,15 @@ if __name__ == '__main__':
     AdaptiveThreshold = cv2.adaptiveThreshold(gray_not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
     Net_img,contours,mask = FindContours(AdaptiveThreshold,False,20)
     cells = Getcells(Net_img,contours)
-    #其中49，待定。不同技术确认书版本，49序号不一致
-    result, checkbox = checkboxText(cells[49])
+
+    for i,cell in enumerate(cells):
+        w = cell.shape[1]
+        h = cell.shape[0]
+        if h > 60 and w > 300 :
+            checknum = i
+            break
+    #print(cells[49].shape[0])
+    result, checkbox = checkboxText(cells[checknum])
 
     #
     #for cell in cells:
