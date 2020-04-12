@@ -309,26 +309,126 @@ def Getcells(Net_img,contours):
         x,y,w,h = Rect
         cell = dst[y:y+h,x:x+w]
         cells.append(cell)
-        cv2.rectangle(dst, (x, y), (x + w, y + h), (0,255,0), 1)
+        #cv2.rectangle(dst, (x, y), (x + w, y + h), (0,255,0), 1)
         #cv2.namedWindow('Net', cv2.WINDOW_NORMAL)
-        #cv2.imshow('Net',dst)
+        #cv2.imshow('Net',cell)
         #cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    #cv2.destroyAllWindows()
     return cells
 
 def checkboxText(cell):
     result = False
-    gray = cv2.cvtColor(cell, cv2.COLOR_BGR2GRAY)
+    image = cell
+    gray_img = cv2.cvtColor(cell, cv2.COLOR_BGR2GRAY)
+
+    #直方图均值化，增强图像，提升对比度
+    equ = cv2.equalizeHist(gray_img)
+    # 图像增强相关代码如下：
+    '''
+        #图像线性变换
+        #图像大小调整
+        ori_h, ori_w = image.shape[:2]
+        height, width = gray_img.shape[:2]
+        image = cv2.resize(image, (int(ori_w/ori_h*400), 400), interpolation=cv2.INTER_CUBIC)
+        gray_img = cv2.resize(gray_img, (int(width/height*400), 400), interpolation=cv2.INTER_CUBIC)
+
+        #a<0 and b=0: 图像的亮区域变暗，暗区域变亮
+        a, b = -0.5, 0
+        new_img1 = np.ones((gray_img.shape[0], gray_img.shape[1]), dtype=np.uint8)
+        for i in range(new_img1.shape[0]):
+            for j in range(new_img1.shape[1]):
+                new_img1[i][j] = gray_img[i][j]*a + b
+
+        #a>1: 增强图像的对比度,图像看起来更加清晰
+        a, b = 1.5, 20
+        new_img2 = np.ones((gray_img.shape[0], gray_img.shape[1]), dtype=np.uint8)
+        for i in range(new_img2.shape[0]):
+            for j in range(new_img2.shape[1]):
+                if gray_img[i][j]*a + b > 255:
+                    new_img2[i][j] = 255
+                else:
+                    new_img2[i][j] = gray_img[i][j]*a + b
+
+        #a<1: 减小了图像的对比度, 图像看起来变暗
+        a, b = 0.5, 0
+        new_img3 = np.ones((gray_img.shape[0], gray_img.shape[1]), dtype=np.uint8)
+        for i in range(new_img3.shape[0]):
+            for j in range(new_img3.shape[1]):
+                new_img3[i][j] = gray_img[i][j]*a + b
+
+        #a=1且b≠0, 图像整体的灰度值上移或者下移, 也就是图像整体变亮或者变暗, 不会改变图像的对比度
+        a, b = 1, -50
+        new_img4 = np.ones((gray_img.shape[0], gray_img.shape[1]), dtype=np.uint8)
+        for i in range(new_img4.shape[0]):
+            for j in range(new_img4.shape[1]):
+                pix = gray_img[i][j]*a + b
+                if pix > 255:
+                    new_img4[i][j] = 255
+                elif pix < 0:
+                    new_img4[i][j] = 0
+                else:
+                    new_img4[i][j] = pix
+
+        #a=-1, b=255, 图像翻转
+        new_img5 = 255 - gray_img
+
+        cv2.imshow('origin', imutils.resize(image, 800))
+        cv2.imshow('gray', imutils.resize(gray_img, 800))
+        cv2.imshow('a<0 and b=0', imutils.resize(new_img1, 800))
+        cv2.imshow('a>1 and b>=0', imutils.resize(new_img2, 800))
+        cv2.imshow('a<1 and b>=0', imutils.resize(new_img3, 800))
+        cv2.imshow('a=1 and b><0', imutils.resize(new_img4, 800))
+        cv2.imshow('a=-1 and b=255', imutils.resize(new_img5, 800))
+        if cv2.waitKey(0) == 27:
+            cv2.destroyAllWindows()
+        '''
+    # a>1: 增强图像的对比度,图像看起来更加清晰
+    a, b = 4, 0
+    new_img2 = np.ones((equ.shape[0], equ.shape[1]), dtype=np.uint8)
+    for i in range(new_img2.shape[0]):
+        for j in range(new_img2.shape[1]):
+            if equ[i][j]*a + b > 255:
+                new_img2[i][j] = 255
+            else:
+                new_img2[i][j] = equ[i][j]*a + b
+
     # Gauss = cv2.GaussianBlur(gray,(3,3),0)
-    cv2.imshow('cell',cell)
-    Gauss_Not = cv2.bitwise_not(gray)
+    Gauss_Not = cv2.bitwise_not(gray_img)
+    ret,Binary = cv2.threshold(new_img2,80,255,cv2.THRESH_BINARY_INV)
+
     AdaptiveThreshold = cv2.adaptiveThreshold(Gauss_Not, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 15, -2)
+    #cv2.imshow('cell', AdaptiveThreshold)
     Kenner = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     erode = cv2.erode(AdaptiveThreshold, Kenner)  # 腐蚀图像,黑色加强
     dilate = cv2.dilate(erode, Kenner)
+    Allcontours,hierarchy = cv2.findContours(Binary,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     contours, hierarchy = cv2.findContours(dilate, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    
-    
+
+    Allcheckbox = []
+    for cnt in Allcontours:
+        area = cv2.contourArea(cnt)
+        if area < 30: continue
+        epsilon = 0.1 * cv2.arcLength(cnt, True)
+        approx = cv2.approxPolyDP(cnt, epsilon, True)  # 获取近似轮廓
+        if len(approx) == 4:
+            x, y, w, h = cv2.boundingRect(approx)
+            if (x not in Allcheckbox) or (y not in Allcheckbox) :
+                AllBox = [x,y,w,h]
+                Allcheckbox.append(AllBox)
+
+    if len(Allcheckbox)>0 :
+        Allcheckbox = Listsort(Allcheckbox,1,len(Allcheckbox)-1,2)
+        Allcheckbox = np.array(Allcheckbox)
+        #显示
+        '''
+        for checkbox in Allcheckbox:
+            x,y,w,h = checkbox
+            #cv2.rectangle(cell,(x,y),(x+w,y+h),(0,0,255))
+            #cv2.imshow('CheckRange',cell)
+            #cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        '''
+
     checkbox = []
     for cnt in contours:
         area = cv2.contourArea(cnt)
@@ -345,23 +445,10 @@ def checkboxText(cell):
         result = True
         checkbox = Listsort(checkbox,1,len(checkbox)-1,2)
         checkbox = np.array(checkbox)
-        check_num = len(checkbox)
         CheckRange = []
         for j,check in enumerate(checkbox):
             x, y, w, h = check
             CheckRange = cell[y: y+h, x:(x + 6 * w)]
-            '''
-            if j == check_num :                                    # 最后一个复选框时，直接记录推出for循环
-                CheckRange = cell[y:y+h,(x+w):(x+8*w)]
-                break                                 
-            if checkbox[j+1,1] - y < 2 :                           # 同一行
-                Next_x,Next_y,Next_w,Next_h = checkbox[j+1]
-                CheckRange = cell[y:y+h,x:Next_x]
-                #翻译
-                #CheckboxTxt = print()
-            else :            #最后一个复选框,或者某一行最后一个复选框
-                CheckRange = cell[y:y+h,x:]
-            '''
             cv2.imshow('CheckRange',CheckRange)
             cv2.waitKey(0)
         cv2.destroyAllWindows()
@@ -370,7 +457,7 @@ def checkboxText(cell):
 
 if __name__ == '__main__':
     # 文件名以及路径不能存在中文字符
-    Image_Path = "D:/RDM_Download/PDF_Image/SO200115048.png"
+    Image_Path = "D:/RDM_Download/PDF_Image/SO200116017.png"
     #cutImg_path = 'D:\\RDM_Download\\PDF_Image'
     #cutImg_name = Image_Path.split('/')[-1][:-4]
 
@@ -409,6 +496,9 @@ if __name__ == '__main__':
         h = cell.shape[0]
         if h > 60 and w > 300 :
             checknum = i
+            #cv2.imshow("cell",cell)
+            #cv2.waitKey(0)
+            #cv2.destroyAllWindows()
             break
     #print(cells[49].shape[0])
     result, checkbox = checkboxText(cells[checknum])
