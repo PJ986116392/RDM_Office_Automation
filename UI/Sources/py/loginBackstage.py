@@ -1,63 +1,10 @@
-from tkinter import *
-import requests
-import re
-class Application(Frame):
-    def __init__(self,master = None):
-        super().__init__(master)
-        self.master = master
-        self.pack()
-        self.creatwidget()
-
-
-    def creatwidget(self):
-        # 登录界面
-        # 用户名称
-        # 方法一
-        """"
-        self.loginLabel = Label(self,text = "登录（Login...)",bg = "deepskyblue",
-                                fg = "white",font = ("微软雅黑",9),width = 49,anchor = "w")
-        self.loginLabel.pack()
-
-        self.text = Text(self,width = 49 , height = 6)
-        self.text.pack()
-
-        self.text.insert("1.0", "            账号:")
-        self.userName = StringVar()
-        userNameinput = Entry(self, textvariable = self.userName)
-        self.userName.set("pengjian")
-        self.text.window_create(INSERT, window=userNameinput)
-
-        self.text.insert("2.0", "\n            密码:")
-        self.pwd = StringVar()
-        passWord = Entry(self, textvariable = self.pwd)
-        self.pwd.set("")
-        self.text.window_create(INSERT, window=passWord)
-
-        loginBtn = Button(self, text=" 登录 ", command=self.Login)
-        cannelBtn = Button(self, text=" 取消 ", command=root.destroy)
-        self.text.insert("insert","\n                         ")
-        self.text.window_create(INSERT, window=loginBtn)
-        self.text.window_create(INSERT, window=cannelBtn)
-
-        """
-        self.str = StringVar()
-        self.str.set("登录（Login...)")
-        label1 = Label(self,text=self.str.get(), bg="deepskyblue",fg="white", font=("微软雅黑", 9), width=49, height = 1,anchor="w",pady = 2)
-        label1.grid(row = 1,column = 0 ,columnspan = 5)
-
-        Label(self,text = "账号:").grid(row = 2,column = 1,sticky = EW)
-        Label(self, text="密码:").grid(row=3, column = 1,sticky = EW)
-
-        self.userName = StringVar()
-        Entry(self, textvariable = self.userName).grid(row = 2,column = 2,columnspan = 2,sticky = W,pady = 10)
-        self.userName.set("pengjian")
-
-        self.pwd = StringVar()
-        Entry(self, textvariable = self.pwd).grid(row = 3,column = 2,columnspan = 2,sticky = W)
-        self.pwd.set("")
-
-        Button(self, text=" 登录 ", command=self.Login).grid(row = 4,column = 3,sticky = W)
-        Button(self, text=" 取消 ", command=root.destroy).grid(row = 4,column =3,sticky = E)
+from UI.Sources.ui.Login import Ui_Form
+import requests,re
+from PyQt5.Qt import *
+class Window(QWidget,Ui_Form):
+    def setupUi(self, Form):
+        super().__init__()
+        self.setupUi(self)
 
     def Login(self):
         # 模拟登录函数，用户名，密码正确，返回错误标志位，登录新界面的 Html text ，Cookie
@@ -102,22 +49,15 @@ class Application(Frame):
             return errorFlag,''
 
 if __name__ == '__main__':
+    import sys
+    app = QApplication(sys.argv)
+    Form = QWidget()
+    window = Window()
+    window.setupUi(Form,Ui_Form)
     extranetlUrl = {
         'login': 'http://rdm.toptech-developer.com:81/BPM/Home/Login.aspx?ReturnUrl=/bpm/TaskList/Default.aspx',
         'taskList': 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx',
         'newTask': '',
 
     }
-    root = Tk()
-    rootWidth = 350
-    rootHeight = 125
-    # 获取屏幕分辨率
-    screenWidth = root.winfo_screenwidth()
-    screenHeight = root.winfo_screenheight()
-    # 计算出偏移坐标
-    x = (screenWidth - rootWidth)/2
-    y = (screenHeight - rootHeight)/2
-    root.geometry("%dx%d+%d+%d"%(rootWidth,rootHeight,x,y))
-    root.title("Top-tech RDM V1.0")
-    app = Application(master=root)
-    app.mainloop()
+    sys.exit(app.exec_())
