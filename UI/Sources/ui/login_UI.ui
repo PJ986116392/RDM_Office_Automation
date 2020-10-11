@@ -53,13 +53,13 @@
     <string>Login.....</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>60</x>
      <y>30</y>
      <width>225</width>
-     <height>57</height>
+     <height>58</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
@@ -67,13 +67,6 @@
      <widget class="QLabel" name="label_2">
       <property name="text">
        <string>账号：</string>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QLineEdit" name="userName">
-      <property name="text">
-       <string>pengjian</string>
       </property>
      </widget>
     </item>
@@ -87,9 +80,26 @@
     <item row="1" column="1">
      <widget class="QLineEdit" name="passWord"/>
     </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="userName">
+      <property name="editable">
+       <bool>true</bool>
+      </property>
+      <item>
+       <property name="text">
+        <string>pengjian</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>tongfan</string>
+       </property>
+      </item>
+     </widget>
+    </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>60</x>
@@ -175,7 +185,7 @@
    <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>Form</receiver>
-   <slot>Login()</slot>
+   <slot>check_login_Btn()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>186</x>
@@ -189,6 +199,6 @@
   </connection>
  </connections>
  <slots>
-  <slot>Login()</slot>
+  <slot>check_login_Btn()</slot>
  </slots>
 </ui>
