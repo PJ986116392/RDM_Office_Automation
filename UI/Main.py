@@ -46,25 +46,18 @@ def getTasklist_text(cookies,url):
                     <PID>1235062</PID>
                </Param>
                '''
+
     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
 
-    # # 获取生产指示单列表list_so(二维列表)
-    # geturl = 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx'
+    # 获取生产指示单列表list_so(二维列表)
+    geturl = 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx'
     # 获取待处理任务中的web内容
-    soweb = rdm.gethtmltext("get", url, cookies, **headers)
+    soweb = rdm.gethtmltext("get", geturl, cookies, **headers)
     # 获取列表：['PO20191129001','生产指示单','刘博鹏由王冬琴代填','2019-11-29 09:52:23','TV电源硬件','制单人:王冬琴,客户代码：C058受订单号：SO191129001,品号:601E628H01TV13002L\n','1235553','85525']
     list_so = rdm.getsolist(soweb,"生产指示单")
 
     return list_so
-    # 获取生产指示单成品料号，机型，成品规格描述
-    # if len(list_so) != 0:  # 如果列表不为空
-    #     print(list_so)
-    #     for i in range(len(list_so)):
-    #         # 处理PDF
-    #         rdm.pdfparsing(list_so, xml_data, headers, cookies, i)
-    # else:
-    #     print('无待处理的生产指示单')
 
 
 if __name__ == '__main__':
@@ -78,12 +71,18 @@ if __name__ == '__main__':
         'newTask': '',
     }
 
+    intranetUrl = {
+        'login': 'http://172.168.5.151:81/bpm/Home/Login.aspx',
+        'taskList': 'http://172.168.5.151:81/bpm/PostRequest/Default.aspx',
+        'newTask': '',
+    }
+
     # 槽函数
     def login(account,pwd):
-        errorFlag, Cookies = getCookie(extranetlUrl["login"],account,pwd)
+        errorFlag, Cookies = getCookie(intranetUrl["login"],account,pwd)
         if errorFlag == True :
             loginpanel.hide()
-            tasklisttext = getTasklist_text(Cookies,extranetlUrl["taskList"])
+            tasklisttext = getTasklist_text(Cookies,intranetUrl["taskList"])
             print(tasklisttext)
             tasklistpanel.show()
         else:

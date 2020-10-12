@@ -95,7 +95,7 @@ class ParsingRDM(object):
                         if td.string == keyWord:
                             input_id = re.search('"\d{7}"',
                                                  str(td.previous_sibling.previous_sibling.previous_sibling)).group(0)[1:-1]
-                            task_tid = re.search('"\d{5}"',
+                            task_tid = re.search('"\d{6}"',
                                                  str(td.previous_sibling.previous_sibling.previous_sibling)).group(0)[1:-1]
                             list_row = tr.text.split('\xa0')[1:]
                             list_row.append(input_id)
@@ -232,8 +232,8 @@ if __name__ == '__main__':
     # 获取生产指示单成品料号，机型，成品规格描述
     if len(list_so) != 0:  # 如果列表不为空
         print(list_so)  # 打印列表
-        for i in range(len(list_so)):
-            # 处理PDF
-            rdm.pdfparsing(list_so, xml_data, headers, cookies, i)
+        # for i in range(len(list_so)):
+        #     # 处理PDF
+        #     rdm.pdfparsing(list_so, xml_data, headers, cookies, i)
     else:
         print('无待处理的生产指示单')
