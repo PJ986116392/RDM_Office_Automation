@@ -5,29 +5,43 @@ import os
 import fitz
 import numpy as np
 
-class ParsingRDM(object):
-    def __init__(self,cookies):
+class WebText(object):                          # 爬虫技术类
+    def __init__(self,webtext,cookies):
+        self.webtext = webtext
         self.cookies = cookies
 
-    def get_dir_name(self,file_dir):
-        base_name = os.path.basename(file_dir)  # 获得地址的文件名
-        dir_name = os.path.dirname(file_dir)  # 获得地址的父链接
-        return dir_name, base_name
+    def getCookie(self,url, account, pwd):
+        # 获取cookie函数，如果用户名，密码错误，errorFlag返回False，并且cookie为空
+        errorFlag = False
+        data = {
+            'Login1$_txtAccount': account,
+            'Login1$_txtPWD': pwd,
+            '__VIEWSTATE': '/wEPDwUKLTQ1NTkwODAyMg9kFgICAw9kFgQCAQ9kFg4CBQ8PFgIeBFRleHQFM+W9k+WJjTxmb250IGNvbG9yPSIjY2MwMDAwIj4xPC9mb250PuS9jeeUqOaIt+WcqOe6v2RkAgcPDxYCHwAFBzxiPjwvYj5kZAIJDw8WAh4HVmlzaWJsZWhkZAIKDw8WBB8ABQXCoHzCoB8BaGRkAgsPDxYEHwAFBuWkluWHuh4LTmF2aWdhdGVVcmwFFC4uL0NvbW1vbi9MZWF2ZS5hc3B4ZGQCDQ8PFgIfAAUG5biQ5Y+3ZGQCDw8PFgIfAAUG6YCA5Ye6ZGQCAw9kFgICBA8PFgIfAAUb55So5oi35ZCN5oiW5a+G56CB5pyJ6K+v77yBZGRktThqfHvDjJayCu2Ywmisa6gVkQk=',
+            '__EVENTVALIDATION': '/wEWBQLupKneDAKTup+7CgKdu4mlDQLzuILQCgLbqb+1DIuL2a5Sf0hGICaCq32juFgb4ssf',
+            'Login1$_btnWebLogin': '登录(zh-chs)'
+        }
+        # allow_redirects 重定向使能，一般登录时，用户端会将用户名，密码等信息上传至服务器，服务器返回cookie，或者令牌token 给用户端
+        # 返回方式为重定向，用抓包工具可知此时状态码为302 ， request库默认 allow_redirects=Ture 允许自动重定向，resp得到的是重定向之后的200的HTML内容
+        resp = requests.post(url, data, allow_redirects=False, timeout=30)
+        resp.raise_for_status()
+        if resp.status_code == 302:
+            # 查看网页，寻找规律发现302，为用户名，密码正确，且服务器设置用户端cookie
+            resp.encoding = resp.apparent_encoding
+            # str = requests.utils.dict_from_cookiejar(resp.cookies)              # 获取cookie字符串
+            # # 组合成字符串字典
+            # cookies = {}
+            # for line in str.split(';'):
+            #     key, value = line.split('=', 1)
+            #     cookies[key] = value
+            #
+            errorFlag = True
+            return errorFlag, requests.utils.dict_from_cookiejar(resp.cookies)
+        elif resp.status_code == 200:
+            # 分析网页可得，状态码为200时，用户名或者密码错误
+            errorFlag = False
+            return errorFlag, ''
 
-    def pdf_image(self,pdf_name):
-        dir_name, base_name = self.get_dir_name(pdf_name)
-        dir_name = 'D:\RDM_Download\\PDF_Image\\'
-        if not os.path.exists(dir_name):  # 如果保存文件夹不存在就创建文件夹
-            os.makedirs(dir_name)
-        pdf = fitz.Document(pdf_name)
-        for pg in range(0, pdf.pageCount):
-            page = pdf[pg]  # 获得每一页的对象
-            trans = fitz.Matrix(1.0, 1.0).preRotate(0)
-            pm = page.getPixmap(matrix=trans, alpha=False)  # 获得每一页的流对象
-            pm.writePNG(dir_name + os.sep + base_name + '.png'.format(pg + 1))  # 保存图片
-        pdf.close()
-
-    def gethtmltext(self,Request_method, url, cookies, **Others_data):  # Others_data包括请求数据，请求头
+    def gethtmltext(self,Request_method, url, **Others_data):  # Others_data包括请求数据，请求头
         # 用途一：以get方式获得待处理任务web内容
         # 用途二：以get方式下载技术确认书（保存路径:Others_data['pdfpath']）
         # 用途三：以post方式，进入生产指示单中，获取订单web内容
@@ -42,7 +56,7 @@ class ParsingRDM(object):
                         path = Others_data['pdfpath'] + ".pdf"
                         Others_data.pop('pdfpath')
                         url = quote(url, safe=string.printable)
-                        resp = requests.get(url, headers=Others_data, cookies=cookies, timeout=30)
+                        resp = requests.get(url, headers=Others_data, cookies=self.cookies, timeout=30)
                         resp.raise_for_status()
                         with open(path, "wb") as f:
                             f.write(resp.content)
@@ -70,7 +84,7 @@ class ParsingRDM(object):
                 data = Others_data['Requests_data']
                 Others_data.pop('Requests_data')
                 try:
-                    resp = requests.post(url, headers=Others_data, cookies=cookies, timeout=30, data=data)
+                    resp = requests.post(url, headers=Others_data, cookies=self.cookies, timeout=30, data=data)
                     # 如果状态不是200，引发HTTPError异常
                     resp.raise_for_status()
                     resp.encoding = resp.apparent_encoding
@@ -95,9 +109,9 @@ class ParsingRDM(object):
                         if td.string == keyWord:
                             input_id = re.search('"\d{7}"',
                                                  str(td.previous_sibling.previous_sibling.previous_sibling)).group(0)[1:-1]
-                            task_tid = re.search('"\d{6}"',
+                            task_tid = re.search('"\d{5,6}"',
                                                  str(td.previous_sibling.previous_sibling.previous_sibling)).group(0)[1:-1]
-                            list_row = tr.text.split('\xa0')[1:]
+                            list_row = tr.text.strip().split('\xa0')
                             list_row.append(input_id)
                             list_row.append(task_tid)
                             getsolist.append(list_row)
@@ -114,6 +128,30 @@ class ParsingRDM(object):
 
         getso = np.delete(getsolist, list_del, axis=0)  # 统一删除重复数据行
         return getso
+
+
+    # def getTasklist_text(self,url,keyWord):
+    #
+    #     list_so = []
+    #
+    #
+    #     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
+    #                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
+    #
+    #     # 获取生产指示单列表list_so(二维列表)
+    #     #geturl = 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx'
+    #     # 获取待处理任务中的web内容
+    #     webText = self.gethtmltext("get", url, self.cookies, **headers)
+    #
+    #     sort_list = ['生产指示单','BOM制作指导单','(新)ECN变更申请表','异常工艺改善反馈表','生产通知单']
+    #
+    #     # 获取列表：['PO20191129001','生产指示单','刘博鹏由王冬琴代填','2019-11-29 09:52:23','TV电源硬件','制单人:王冬琴,客户代码：C058受订单号：SO191129001,品号:601E628H01TV13002L\n','1235553','85525']
+    #     list_so = self.getsolist(webText, keyWord)
+    #     #list_bom = self.getsolist(webText, "BOM制作指导单")
+    #     #list_ecn = self.getsolist(webText, "(新)ECN变更申请表")
+    #     #list_improvePro = self.getsolist(webText, "异常工艺反馈改善表")
+    #
+    #     return list_so,webText
 
     def getsospec(self,demo):
         # 获取成品料号，机型名称，成品规格描述，so对应技术确认书
@@ -154,7 +192,30 @@ class ParsingRDM(object):
 
         return getsospec
 
-    def pdfparsing(self,list_so, xml_data, headers, cookies, i):
+class PDF():                                # 文件操作，文件（PDF）下载
+
+    def __init__(self):
+        pass
+
+    def get_dir_name(self,file_dir):
+        base_name = os.path.basename(file_dir)  # 获得地址的文件名
+        dir_name = os.path.dirname(file_dir)  # 获得地址的父链接
+        return dir_name, base_name
+
+    def pdf_image(self,pdf_name):
+        dir_name, base_name = self.get_dir_name(pdf_name)
+        dir_name = 'D:\RDM_Download\\PDF_Image\\'
+        if not os.path.exists(dir_name):  # 如果保存文件夹不存在就创建文件夹
+            os.makedirs(dir_name)
+        pdf = fitz.Document(pdf_name)
+        for pg in range(0, pdf.pageCount):
+            page = pdf[pg]  # 获得每一页的对象
+            trans = fitz.Matrix(1.0, 1.0).preRotate(0)
+            pm = page.getPixmap(matrix=trans, alpha=False)  # 获得每一页的流对象
+            pm.writePNG(dir_name + os.sep + base_name + '.png'.format(pg + 1))  # 保存图片
+        pdf.close()
+
+    def pdfparsing(self, list_so, xml_data, headers, cookies, i):
         # 获取订单参数：pid,tid,so_information
         pid = list_so[i][6]  # 1235553
         tid = list_so[i][7]  # 85525
@@ -189,7 +250,7 @@ class ParsingRDM(object):
                 spec_unicode = spec_unicode + '%2B'
             else:
                 spec_unicode = spec_unicode + hex(ord(s)).upper().replace('0X', '%u')
-    
+
         so_url = 'http://rdm.toptech-developer.com:81/bpm/FileUpload/DownloadFile.aspx?md=task&tid=' + tid + '&did=&file=' + spec_unicode  # 技术确认书url
         '''
         # 方案二：
@@ -200,40 +261,3 @@ class ParsingRDM(object):
 
         Res = self.gethtmltext("get", so_url, cookies, **headers)
         self.pdf_image(headers['pdfpath'])
-
-
-if __name__ == '__main__':
-    # 初始化部分参数
-    cookie_str = r'ASP.NET_SessionId=kblbkgi1ks52yr3jelwiipfh; .ASPXFORMSAUTH=A3E69BE31570688D3E61743DB6C2D15213701B68DBDF433A2B2F9D8A2A397EF37B7CD3FFF4B0D33BC0F23CDB5C1AD537B747C5C8C9ED4386CEDE6026365E4BF032FC95CD5A73735783939A3239677D161771C229CF12E7EFD4D03D21581E26B0EEF0549B387500FEFA8183DA08571CFCBBEDC3FA'
-    #处理cookies
-    cookies = {}
-    for line in cookie_str.split(';'):
-        key, value = line.split('=', 1)
-        cookies[key] = value
-
-    rdm = ParsingRDM(cookies)
-
-    xml_data = '''<?xml version='1.0'?>
-               <Param>
-                    <Method>GetFormProcessData</Method>
-                    <PID>1235062</PID>
-               </Param>
-               '''
-    headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
-               'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
-
-    # 获取生产指示单列表list_so(二维列表)
-    geturl = 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx'
-    # 获取待处理任务中的web内容
-    soweb = rdm.gethtmltext("get", geturl, cookies, **headers)
-    # 获取列表：['PO20191129001','生产指示单','刘博鹏由王冬琴代填','2019-11-29 09:52:23','TV电源硬件','制单人:王冬琴,客户代码：C058受订单号：SO191129001,品号:601E628H01TV13002L\n','1235553','85525']
-    list_so = rdm.getsolist(soweb,"生产指示单")
-
-    # 获取生产指示单成品料号，机型，成品规格描述
-    if len(list_so) != 0:  # 如果列表不为空
-        print(list_so)  # 打印列表
-        # for i in range(len(list_so)):
-        #     # 处理PDF
-        #     rdm.pdfparsing(list_so, xml_data, headers, cookies, i)
-    else:
-        print('无待处理的生产指示单')
