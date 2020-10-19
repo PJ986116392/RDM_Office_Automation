@@ -1,14 +1,22 @@
 from UI.Sources.ui.taskList_UI import Ui_TaskListWindow
 from PyQt5.Qt import *
+from PyQt5.QtWebEngineWidgets import *
+
 class TaskList(QWidget,Ui_TaskListWindow):
 
     listChoose_comb_change_signal = pyqtSignal(str,str)
     refreshWebtext_signal = pyqtSignal()
+    #
+    # 设置网页在窗口中显示的位置和大小
+    # self.qwebengine.setGeometry(20, 20, 600, 600)
+    # # 在QWebEngineView中加载网址
+    # self.qwebengine.load(QUrl(r"https://www.csdn.net/"))
 
-    def __init__(self,webtext,displayList):
+    def __init__(self,webtext,displayList,cookies):
         super().__init__()
         self.webtext = webtext
         self.displayList = displayList
+        self.cookies = cookies
         self.setupUi(self)
         self.taskList_btn.setChecked(True)              # 设置待处理任务按钮选中
         self.btn_checkFalse('taskList_btn')             # 设置填写新表单等按钮取消
@@ -16,6 +24,20 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.waring_btn.setChecked(False)               # 设置注意事项按钮取消
         self.add_btn.setHidden(True)                    # 设置注意事项增加按钮隐藏
         self.delete_btn.setHidden(True)                 # 设置注意事项增加按钮隐藏
+        self.Bottom_wid.setMinimumSize(1200,837)
+        self.Bottom_wid.setMaximumSize(1200,837)
+        self.qwebengine = QWebEngineView()
+        self.qwebengine.setParent(self.Bottom_wid)
+
+        # 绑定cookie被添加的信号槽
+        # QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookies,QUrl(r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx"))
+        self.qwebengine.setGeometry(0, 0, 1200,837)
+        self.Bottom_wid.setHidden(True)
+
+    def onCookieAdd(self):                                      # 处理cookie添加的事件
+        name = self.cookie.name().data().decode('utf-8')        # 先获取cookie的名字，再把编码处理一下
+        value = self.cookie.value().data().decode('utf-8')      # 先获取cookie值，再把编码处理一下
+        self.cookies[name] = value  # 将cookie保存到字典里
 
     def listChoose_comb_change(self):
         if self.taskList_btn.isChecked():
@@ -27,51 +49,64 @@ class TaskList(QWidget,Ui_TaskListWindow):
         if checked:                                     # 其他按钮取消
             self.btn_checkFalse('newForm_btn')
             #self.showMinimized()
-            self.widget_4.setHidden(True)
-            self.widget_5.setHidden(True)
+            self.Left_wid.setHidden(True)
+            self.Table_veiw_wid.setHidden(True)
+            self.Bottom_wid.setHidden(False)
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
 
     def draft_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
             self.btn_checkFalse('draft_btn')
             #self.showMinimized()
-            self.widget_4.setHidden(True)
-            self.widget_5.setHidden(True)
+            self.Left_wid.setHidden(True)
+            self.Table_veiw_wid.setHidden(True)
+            self.Bottom_wid.setHidden(False)
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
 
     def taskList_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
             # 界面互动
             self.btn_checkFalse('taskList_btn')
             #self.showMinimized()
-            self.widget_4.setHidden(False)
-            self.widget_5.setHidden(False)
+            self.Left_wid.setHidden(False)
+            self.Table_veiw_wid.setHidden(False)
+            self.Bottom_wid.setHidden(True)
 
     def historicalSen_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
             self.btn_checkFalse('historicalSen_btn')
             #self.showMinimized()
-            self.widget_4.setHidden(True)
-            self.widget_5.setHidden(True)
+            self.Left_wid.setHidden(True)
+            self.Table_veiw_wid.setHidden(True)
+            self.Bottom_wid.setHidden(False)
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
 
     def historicalPro_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
             self.btn_checkFalse('historicalPro_btn')
             #self.showMinimized()
-            self.widget_4.setHidden(True)
-            self.widget_5.setHidden(True)
+            self.Left_wid.setHidden(True)
+            self.Table_veiw_wid.setHidden(True)
+            self.Bottom_wid.setHidden(False)
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
 
     def Form_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
             self.btn_checkFalse('Form_btn')
             #self.showMinimized()
-            self.widget_4.setHidden(True)
-            self.widget_5.setHidden(True)
+            self.Left_wid.setHidden(True)
+            self.Table_veiw_wid.setHidden(True)
+            self.Bottom_wid.setHidden(False)
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
 
     def lookFor_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
             self.btn_checkFalse('lookFor_btn')
             #self.showMinimized()
-            self.widget_4.setHidden(True)
-            self.widget_5.setHidden(True)
+            self.Left_wid.setHidden(True)
+            self.Table_veiw_wid.setHidden(True)
+            self.Bottom_wid.setHidden(False)
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
 
     def taskInformation_btn_click(self,checked):
         if checked :
@@ -92,7 +127,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
         # 列表根据值删除，其他方法还有根据index 删除列表元素del，pop等
         chooseList.remove(set_btn_checkFalse)
-        widget = self.widget
+        widget = self.Top_wid
 
         # 遍历widget内所有控件
         for btn in widget.children():
@@ -157,13 +192,3 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     def refreshWebtext(self):
         self.refreshWebtext_signal.emit()
-
-
-if __name__ == '__main__':
-    import sys
-    app = QApplication(sys.argv)
-    list =  [['PO20191129001','生产指示单','刘博鹏由王冬琴代填','2019-11-29 09:52:23','TV电源硬件','制单人:王冬琴,客户代码：C058受订单号：SO191129001,品号:601E628H01TV13002L','1235553','85525']]
-
-    window = TaskList(list)
-    window.show()
-    sys.exit(app.exec_())

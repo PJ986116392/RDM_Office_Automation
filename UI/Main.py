@@ -1,6 +1,5 @@
 from UI.Sources.py.loginPanel import LoginPanel
 from UI.Sources.py.tasklistPanel import TaskList
-import requests
 from PyQt5.Qt import *
 from Parsing_RDM import WebText
 
@@ -8,7 +7,7 @@ if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
     loginpanel = LoginPanel()
-    tasklistpanel = TaskList('','')     # webtext,displayList
+    tasklistpanel = TaskList('','','')     # webtext,displayList
     rdmWeb = WebText('','')             # webtext,cookies
     extranetlUrl = {
         'login': 'http://rdm.toptech-developer.com:81/BPM/Home/Login.aspx?ReturnUrl=/bpm/TaskList/Default.aspx',
@@ -29,7 +28,10 @@ if __name__ == '__main__':
     def login(account,pwd):
         errorFlag, Cookies = rdmWeb.getCookie(extranetlUrl["login"],account,pwd)
         rdmWeb.cookies = Cookies
-        #print(Cookies)
+
+        # 传递cookie给TaskList界面
+        tasklistpanel.cookies = Cookies
+        print(Cookies)
         if errorFlag == True :
             loginpanel.hide()
             webtext = rdmWeb.gethtmltext("get",extranetlUrl['taskList'], **headers)
