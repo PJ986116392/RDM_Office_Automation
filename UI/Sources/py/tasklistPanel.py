@@ -29,14 +29,16 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.qwebengine = QWebEngineView()
         self.qwebengine.setParent(self.Bottom_wid)
 
-        # 绑定cookie被添加的信号槽
-        # QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookies,QUrl(r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx"))
         self.qwebengine.setGeometry(0, 0, 1200,837)
+        QWebEngineProfile.defaultProfile().setHttpUserAgent('Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6')
+        # 清除COOKIE
+        QWebEngineProfile.defaultProfile().cookieStore().deleteAllCookies()
+
         self.Bottom_wid.setHidden(True)
 
-    def onCookieAdd(self):                                      # 处理cookie添加的事件
-        name = self.cookie.name().data().decode('utf-8')        # 先获取cookie的名字，再把编码处理一下
-        value = self.cookie.value().data().decode('utf-8')      # 先获取cookie值，再把编码处理一下
+    def onCookieAdd(self):                                                   # 处理cookie添加的事件
+        name = self.cookies.name().data().decode('utf-8')                    # 先获取cookie的名字，再把编码处理一下
+        value = self.cookies.value().data().decode('utf-8')                  # 先获取cookie值，再把编码处理一下
         self.cookies[name] = value  # 将cookie保存到字典里
 
     def listChoose_comb_change(self):
@@ -52,7 +54,11 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
             self.Bottom_wid.setHidden(False)
-            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
+            # 绑定cookie被添加的信号槽
+            for key in self.cookies:
+                cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
+                QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx"))
+            self.qwebengine.load(QUrl(r"http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx"))
 
     def draft_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
@@ -61,7 +67,10 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
             self.Bottom_wid.setHidden(False)
-            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
+            for key in self.cookies:
+                cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
+                QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/TaskList/Draft.aspx"))
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Draft.aspx")))
 
     def taskList_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
@@ -79,7 +88,10 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
             self.Bottom_wid.setHidden(False)
-            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
+            for key in self.cookies:
+                cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
+                QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/My.aspx"))
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/History/My.aspx")))
 
     def historicalPro_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
@@ -88,7 +100,10 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
             self.Bottom_wid.setHidden(False)
-            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
+            for key in self.cookies:
+                cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
+                QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/Processed.aspx"))
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/History/Processed.aspx")))
 
     def Form_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
@@ -97,7 +112,10 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
             self.Bottom_wid.setHidden(False)
-            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
+            for key in self.cookies:
+                cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
+                QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/Reports/Default.aspx"))
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/Reports/Default.aspx")))
 
     def lookFor_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
@@ -106,7 +124,10 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
             self.Bottom_wid.setHidden(False)
-            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx")))
+            for key in self.cookies:
+                cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
+                QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/All.aspx"))
+            self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/History/All.aspx")))
 
     def taskInformation_btn_click(self,checked):
         if checked :
