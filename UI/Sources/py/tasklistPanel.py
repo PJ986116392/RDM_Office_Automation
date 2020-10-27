@@ -1,5 +1,6 @@
 from UI.Sources.ui.taskList_UI import Ui_TaskListWindow
 from PyQt5.Qt import *
+from PyQt5 import QtWidgets
 from PyQt5.QtWebEngineWidgets import *
 
 class TaskList(QWidget,Ui_TaskListWindow):
@@ -24,22 +25,21 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.waring_btn.setChecked(False)               # 设置注意事项按钮取消
         self.add_btn.setHidden(True)                    # 设置注意事项增加按钮隐藏
         self.delete_btn.setHidden(True)                 # 设置注意事项增加按钮隐藏
-        self.Bottom_wid.setMinimumSize(1200,837)
-        self.Bottom_wid.setMaximumSize(1200,837)
-        self.qwebengine = QWebEngineView()
-        self.qwebengine.setParent(self.Bottom_wid)
 
-        self.qwebengine.setGeometry(0, 0, 1200,837)
+        # 设置水平布局盒子，并命名为horizontalLayout3
+        self.horizontalLayout3 = QtWidgets.QHBoxLayout(self.Web_wid)
+        self.horizontalLayout3.setObjectName("horizontalLayout3")
+        # 创建QWebEngineView 控件
+        self.qwebengine = QWebEngineView()
+        #self.qwebengine.setParent(self.Web_wid)
+        # 往Bottom 窗口添加 QWebEngineView 控件，并实现水平布局
+        self.horizontalLayout3.addWidget(self.qwebengine)
         QWebEngineProfile.defaultProfile().setHttpUserAgent('Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6')
         # 清除COOKIE
         QWebEngineProfile.defaultProfile().cookieStore().deleteAllCookies()
+        # 设置隐藏
+        self.Web_wid.setHidden(True)
 
-        self.Bottom_wid.setHidden(True)
-
-    def onCookieAdd(self):                                                   # 处理cookie添加的事件
-        name = self.cookies.name().data().decode('utf-8')                    # 先获取cookie的名字，再把编码处理一下
-        value = self.cookies.value().data().decode('utf-8')                  # 先获取cookie值，再把编码处理一下
-        self.cookies[name] = value  # 将cookie保存到字典里
 
     def listChoose_comb_change(self):
         if self.taskList_btn.isChecked():
@@ -48,13 +48,13 @@ class TaskList(QWidget,Ui_TaskListWindow):
                 self.listChoose_comb_change_signal.emit(self.webtext,text)
 
     def newForm_btn_click(self,checked):
-        if checked:                                     # 其他按钮取消
+        if checked:
+            # 其他按钮隐藏
             self.btn_checkFalse('newForm_btn')
-            #self.showMinimized()
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
-            self.Bottom_wid.setHidden(False)
-            # 绑定cookie被添加的信号槽
+            self.Web_wid.setHidden(False)
+
             for key in self.cookies:
                 cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx"))
@@ -66,7 +66,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #self.showMinimized()
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
-            self.Bottom_wid.setHidden(False)
+            self.Web_wid.setHidden(False)
             for key in self.cookies:
                 cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/TaskList/Draft.aspx"))
@@ -79,7 +79,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #self.showMinimized()
             self.Left_wid.setHidden(False)
             self.Table_veiw_wid.setHidden(False)
-            self.Bottom_wid.setHidden(True)
+            self.Web_wid.setHidden(True)
 
     def historicalSen_btn_click(self,checked):
         if checked:                                     # 其他按钮取消
@@ -87,7 +87,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #self.showMinimized()
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
-            self.Bottom_wid.setHidden(False)
+            self.Web_wid.setHidden(False)
             for key in self.cookies:
                 cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/My.aspx"))
@@ -99,7 +99,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #self.showMinimized()
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
-            self.Bottom_wid.setHidden(False)
+            self.Web_wid.setHidden(False)
             for key in self.cookies:
                 cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/Processed.aspx"))
@@ -111,7 +111,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #self.showMinimized()
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
-            self.Bottom_wid.setHidden(False)
+            self.Web_wid.setHidden(False)
             for key in self.cookies:
                 cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/Reports/Default.aspx"))
@@ -123,7 +123,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #self.showMinimized()
             self.Left_wid.setHidden(True)
             self.Table_veiw_wid.setHidden(True)
-            self.Bottom_wid.setHidden(False)
+            self.Web_wid.setHidden(False)
             for key in self.cookies:
                 cookie = QNetworkCookie(QByteArray(key.encode()), QByteArray(self.cookies[key].encode()))
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/All.aspx"))
