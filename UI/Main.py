@@ -7,7 +7,9 @@ if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
     loginpanel = LoginPanel()
-    tasklistpanel = TaskList('',[],{})     # webtext,displayList
+    tasklistpanel = TaskList('',[],{})     # webtext,displayLis
+    # 设置鼠标跟踪
+    tasklistpanel.setMouseTracking(True)
     rdmWeb = WebText('',{})             # webtext,cookies
     extranetlUrl = {
         'login': 'http://rdm.toptech-developer.com:81/BPM/Home/Login.aspx?ReturnUrl=/bpm/TaskList/Default.aspx',

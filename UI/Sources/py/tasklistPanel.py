@@ -40,6 +40,13 @@ class TaskList(QWidget,Ui_TaskListWindow):
         # 设置隐藏
         self.Web_wid.setHidden(True)
 
+        self.setMouseTracking(True)
+
+    def mouseMoveEvent(self,event):
+        if self.Top_wid.hide() :
+            self.Top_wid.setHidden(False)
+        else:
+            self.Top_wid.setHidden(True)
 
     def listChoose_comb_change(self):
         if self.taskList_btn.isChecked():
@@ -48,6 +55,8 @@ class TaskList(QWidget,Ui_TaskListWindow):
                 self.listChoose_comb_change_signal.emit(self.webtext,text)
 
     def newForm_btn_click(self,checked):
+
+        self.setMouseTracking(True)
         if checked:
             # 其他按钮隐藏
             self.btn_checkFalse('newForm_btn')
