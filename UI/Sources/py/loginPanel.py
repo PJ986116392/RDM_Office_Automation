@@ -5,6 +5,7 @@ class LoginPanel(QWidget,Ui_Form):
 
     def __init__(self):
         super().__init__()
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)  # 去掉标题栏
         self.setupUi(self)
 
     def check_login_Btn(self):

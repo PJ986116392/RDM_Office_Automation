@@ -47,6 +47,21 @@
    <item row="0" column="0" colspan="2">
     <widget class="QWidget" name="Top_wid" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
        <widget class="QPushButton" name="newForm_btn">
         <property name="styleSheet">
@@ -178,6 +193,78 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="min_btn">
+        <property name="minimumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>-</string>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="max_btn">
+        <property name="minimumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>[]</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="close_btn">
+        <property name="minimumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>X</string>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -212,7 +299,7 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>0</number>
+       <number>25</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -292,7 +379,7 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>10</number>
+       <number>0</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
@@ -568,8 +655,8 @@
    <slot>newForm_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>34</y>
+     <x>74</x>
+     <y>23</y>
     </hint>
     <hint type="destinationlabel">
      <x>119</x>
@@ -584,8 +671,8 @@
    <slot>draft_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>342</x>
-     <y>27</y>
+     <x>155</x>
+     <y>23</y>
     </hint>
     <hint type="destinationlabel">
      <x>269</x>
@@ -600,8 +687,8 @@
    <slot>taskList_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>513</x>
-     <y>24</y>
+     <x>236</x>
+     <y>23</y>
     </hint>
     <hint type="destinationlabel">
      <x>452</x>
@@ -616,8 +703,8 @@
    <slot>historicalSen_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>685</x>
-     <y>29</y>
+     <x>317</x>
+     <y>23</y>
     </hint>
     <hint type="destinationlabel">
      <x>590</x>
@@ -632,8 +719,8 @@
    <slot>historicalPro_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>856</x>
-     <y>29</y>
+     <x>398</x>
+     <y>23</y>
     </hint>
     <hint type="destinationlabel">
      <x>778</x>
@@ -648,8 +735,8 @@
    <slot>Form_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1199</x>
-     <y>24</y>
+     <x>560</x>
+     <y>23</y>
     </hint>
     <hint type="destinationlabel">
      <x>1092</x>
@@ -664,8 +751,8 @@
    <slot>lookFor_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1028</x>
-     <y>28</y>
+     <x>479</x>
+     <y>23</y>
     </hint>
     <hint type="destinationlabel">
      <x>975</x>
@@ -681,7 +768,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>19</x>
-     <y>121</y>
+     <y>120</y>
     </hint>
     <hint type="destinationlabel">
      <x>-2</x>
@@ -697,7 +784,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>18</x>
-     <y>214</y>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
      <x>-5</x>
@@ -712,8 +799,8 @@
    <slot>listChoose_comb_change()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>915</x>
-     <y>81</y>
+     <x>949</x>
+     <y>58</y>
     </hint>
     <hint type="destinationlabel">
      <x>910</x>
@@ -728,12 +815,60 @@
    <slot>refreshWebtext()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1144</x>
-     <y>80</y>
+     <x>1174</x>
+     <y>57</y>
     </hint>
     <hint type="destinationlabel">
      <x>1116</x>
      <y>-2</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>min_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>showMinimized()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1125</x>
+     <y>13</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1121</x>
+     <y>-21</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>max_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>showMaximized()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1157</x>
+     <y>11</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1202</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>close_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1185</x>
+     <y>18</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1204</x>
+     <y>40</y>
     </hint>
    </hints>
   </connection>

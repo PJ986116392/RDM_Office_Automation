@@ -7,18 +7,16 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     listChoose_comb_change_signal = pyqtSignal(str,str)
     refreshWebtext_signal = pyqtSignal()
-    #
-    # 设置网页在窗口中显示的位置和大小
-    # self.qwebengine.setGeometry(20, 20, 600, 600)
-    # # 在QWebEngineView中加载网址
-    # self.qwebengine.load(QUrl(r"https://www.csdn.net/"))
 
     def __init__(self,webtext,displayList,cookies):
+        # 基本参数初始化
         super().__init__()
         self.webtext = webtext
         self.displayList = displayList
         self.cookies = cookies
         self.setupUi(self)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)  # 去掉标题栏
+        # 窗口控件状态初始化
         self.taskList_btn.setChecked(True)              # 设置待处理任务按钮选中
         self.btn_checkFalse('taskList_btn')             # 设置填写新表单等按钮取消
         self.taskInformation_btn.setChecked(True)       # 设置订单信息按钮选中
@@ -29,9 +27,11 @@ class TaskList(QWidget,Ui_TaskListWindow):
         # 设置水平布局盒子，并命名为horizontalLayout3
         self.horizontalLayout3 = QtWidgets.QHBoxLayout(self.Web_wid)
         self.horizontalLayout3.setObjectName("horizontalLayout3")
-        # 创建QWebEngineView 控件
+        self.horizontalLayout3.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout3.setSpacing(0)
+        # 手动创建QWebEngineView 控件
         self.qwebengine = QWebEngineView()
-        #self.qwebengine.setParent(self.Web_wid)
+        self.qwebengine.setParent(self.Web_wid)
         # 往Bottom 窗口添加 QWebEngineView 控件，并实现水平布局
         self.horizontalLayout3.addWidget(self.qwebengine)
         QWebEngineProfile.defaultProfile().setHttpUserAgent('Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6')
@@ -39,14 +39,58 @@ class TaskList(QWidget,Ui_TaskListWindow):
         QWebEngineProfile.defaultProfile().cookieStore().deleteAllCookies()
         # 设置隐藏
         self.Web_wid.setHidden(True)
+        # 子控件添加事件处理，必须语句
+        self.Top_wid.installEventFilter(self)
 
-        self.setMouseTracking(True)
+    def eventFilter(self, objwatched, event):                   # 设置事件过滤函数
+        eventType = event.type()
+        if objwatched == self.Top_wid:
+            if eventType == QEvent.Enter:                       # 鼠标进入窗体内部
+                if not self.taskList_btn.isChecked():
+                    self.setTopexpand(0, 0)                     # 动画，将窗口弹出20
+                    self.setWebexpand(0,25)
+            elif eventType == QEvent.Leave:                     # 鼠标离开窗体
+                if not self.taskList_btn.isChecked():
+                    self.setTopexpand(0, -20)                   # 动画，将窗口收回20
+                    self.setWebexpand(0,2)
+                pass
+            elif eventType == QEvent.MouseButtonPress:          # 鼠标在Top_wid单击，计算出窗口偏移坐标
+                self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
+                QApplication.postEvent(self, QEvent(174))
+                event.accept()
+            elif eventType == QEvent.MouseMove:                 # 鼠标挪动，将窗口移动
+                try:
+                    self.move(event.globalPos() - self.dragPosition)
+                    event.accept()
+                except:pass
+        return super().eventFilter(objwatched, event)
 
-    def mouseMoveEvent(self,event):
-        if self.Top_wid.hide() :
-            self.Top_wid.setHidden(False)
-        else:
-            self.Top_wid.setHidden(True)
+    def setTopexpand(self,x,y):                      # 动画函数
+        # 为Top_wid 设置动画，并且动画小姑为平推
+        animation = QPropertyAnimation(self.Top_wid,b"geometry",self)
+        # 创建一个新的动画样式
+        startpos = self.Top_wid.geometry()
+        # 设置动画时长
+        animation.setDuration(500)
+        # 设置移动后位置
+        newpos = QRect(x,y,startpos.width(),25)
+        animation.setEndValue(newpos)
+        # 执行动画
+        print(startpos)
+        animation.start()
+
+    def setWebexpand(self,x,y):                      # 动画函数
+        # 为Top_wid 设置动画，并且动画小姑为平推
+        animation = QPropertyAnimation(self.Web_wid,b"geometry",self)
+        # 创建一个新的动画样式
+        startpos = self.Web_wid
+        # 设置动画时长
+        animation.setDuration(500)
+        # 设置移动后位置
+        newpos = QRect(x,y,startpos.width(),startpos.height())
+        animation.setEndValue(newpos)
+        # 执行动画
+        animation.start()
 
     def listChoose_comb_change(self):
         if self.taskList_btn.isChecked():
@@ -56,7 +100,6 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     def newForm_btn_click(self,checked):
 
-        self.setMouseTracking(True)
         if checked:
             # 其他按钮隐藏
             self.btn_checkFalse('newForm_btn')

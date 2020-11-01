@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'F:\Project_Python\RDM_Office_Automation\UI\Sources\ui\taskList_UI.ui'
+# Form implementation generated from reading ui file 'taskList_UI.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -25,6 +25,8 @@ class Ui_TaskListWindow(object):
         self.Top_wid = QtWidgets.QWidget(TaskListWindow)
         self.Top_wid.setObjectName("Top_wid")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.Top_wid)
+        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout.setSpacing(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.newForm_btn = QtWidgets.QPushButton(self.Top_wid)
         self.newForm_btn.setStyleSheet("fontcolor:rgb(0, 170, 255)")
@@ -72,6 +74,26 @@ class Ui_TaskListWindow(object):
         self.horizontalLayout.addWidget(self.Form_btn)
         spacerItem = QtWidgets.QSpacerItem(612, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem)
+        self.min_btn = QtWidgets.QPushButton(self.Top_wid)
+        self.min_btn.setMinimumSize(QtCore.QSize(25, 25))
+        self.min_btn.setMaximumSize(QtCore.QSize(25, 25))
+        self.min_btn.setDefault(False)
+        self.min_btn.setFlat(True)
+        self.min_btn.setObjectName("min_btn")
+        self.horizontalLayout.addWidget(self.min_btn)
+        self.max_btn = QtWidgets.QPushButton(self.Top_wid)
+        self.max_btn.setMinimumSize(QtCore.QSize(25, 25))
+        self.max_btn.setMaximumSize(QtCore.QSize(25, 25))
+        self.max_btn.setFlat(True)
+        self.max_btn.setObjectName("max_btn")
+        self.horizontalLayout.addWidget(self.max_btn)
+        self.close_btn = QtWidgets.QPushButton(self.Top_wid)
+        self.close_btn.setMinimumSize(QtCore.QSize(25, 25))
+        self.close_btn.setMaximumSize(QtCore.QSize(25, 25))
+        self.close_btn.setToolTip("")
+        self.close_btn.setFlat(True)
+        self.close_btn.setObjectName("close_btn")
+        self.horizontalLayout.addWidget(self.close_btn)
         self.gridLayout.addWidget(self.Top_wid, 0, 0, 1, 2)
         self.Left_wid = QtWidgets.QWidget(TaskListWindow)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -84,7 +106,7 @@ class Ui_TaskListWindow(object):
         self.Left_wid.setStyleSheet("background-color: rgb(255, 255, 255)")
         self.Left_wid.setObjectName("Left_wid")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.Left_wid)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 600)
+        self.verticalLayout.setContentsMargins(0, 25, 0, 600)
         self.verticalLayout.setSpacing(10)
         self.verticalLayout.setObjectName("verticalLayout")
         self.taskInformation_btn = QtWidgets.QPushButton(self.Left_wid)
@@ -116,7 +138,7 @@ class Ui_TaskListWindow(object):
         self.Table_veiw_wid.setStyleSheet("")
         self.Table_veiw_wid.setObjectName("Table_veiw_wid")
         self.gridLayout_2 = QtWidgets.QGridLayout(self.Table_veiw_wid)
-        self.gridLayout_2.setContentsMargins(0, 10, 0, 0)
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setHorizontalSpacing(0)
         self.gridLayout_2.setVerticalSpacing(2)
         self.gridLayout_2.setObjectName("gridLayout_2")
@@ -212,6 +234,9 @@ class Ui_TaskListWindow(object):
         self.waring_btn.clicked['bool'].connect(TaskListWindow.waring_btn_click)
         self.listChoose_comb.currentTextChanged['QString'].connect(TaskListWindow.listChoose_comb_change)
         self.search_btn.clicked.connect(TaskListWindow.refreshWebtext)
+        self.min_btn.clicked.connect(TaskListWindow.showMinimized)
+        self.max_btn.clicked.connect(TaskListWindow.showMaximized)
+        self.close_btn.clicked.connect(TaskListWindow.close)
         QtCore.QMetaObject.connectSlotsByName(TaskListWindow)
 
     def retranslateUi(self, TaskListWindow):
@@ -224,6 +249,9 @@ class Ui_TaskListWindow(object):
         self.historicalPro_btn.setText(_translate("TaskListWindow", "历史处理"))
         self.lookFor_btn.setText(_translate("TaskListWindow", "业务查询"))
         self.Form_btn.setText(_translate("TaskListWindow", "报表"))
+        self.min_btn.setText(_translate("TaskListWindow", "-"))
+        self.max_btn.setText(_translate("TaskListWindow", "[]"))
+        self.close_btn.setText(_translate("TaskListWindow", "X"))
         self.taskInformation_btn.setText(_translate("TaskListWindow", "订\n"
 "单\n"
 "信\n"
