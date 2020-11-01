@@ -76,7 +76,6 @@ class TaskList(QWidget,Ui_TaskListWindow):
         newpos = QRect(x,y,startpos.width(),25)
         animation.setEndValue(newpos)
         # 执行动画
-        print(startpos)
         animation.start()
 
     def setWebexpand(self,x,y):                      # 动画函数
