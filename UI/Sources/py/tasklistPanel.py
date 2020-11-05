@@ -210,10 +210,15 @@ class TaskList(QWidget,Ui_TaskListWindow):
     def displayTablelist(self,displayList):
 
         if len(displayList) != 0:
-
+            # 编辑待处理任务数量
             self.displayPro_labe.setText('待处理任务:[%s/%s]' % (len(displayList),len(displayList)))
-
-            # 设置数据层次结构，4行4列
+            # 设置表格内容不能被修改
+            #self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers0No)
+            # 设置表格选择方式，整行选择
+            self.tableView.setSelectionBehavior(1)
+            # 设置表格不带边框
+            self.tableView.setShowGrid(False)
+            # 设置数据层次结构，m行n列
             self.tableView.model = QStandardItemModel(len(displayList), len(displayList[0])-2)
             # 设置水平方向四个头标签文本内容
             self.tableView.model.setHorizontalHeaderLabels(['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息'])
@@ -228,9 +233,13 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
             for row in range(len(displayList)):
                 for column in range(len(displayList[0])-2):
-
-                    if column == (len(displayList[0])-1) :
-                        item = QStandardItem(displayList[row][column])
+                    if column == (len(displayList[0])-3) :                                      # 针对异常工艺反馈表，删除最后一列简短描述
+                        # str。find 函数，如果未找到字符串返回-1，找到了返回子字符串index
+                        if str(displayList[row][column]).find("简短描述：") != -1:
+                            text = str(displayList[row][column]).replace("简短描述：","")
+                            item = QStandardItem(text)
+                        else:
+                            item = QStandardItem(displayList[row][column])
                     else:
                         item = QStandardItem(displayList[row][column])
                     # 设置每个位置的文本值
@@ -244,16 +253,13 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #水平方向，表格大小拓展到适当的尺寸
             self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-            # 设定列宽
-            # self.tableView.setColumnWidth(0, 110)
-            # self.tableView.setColumnWidth(1, 70)
-            # self.tableView.setColumnWidth(2, 120)
-            # self.tableView.setColumnWidth(3, 140)
-            # self.tableView.setColumnWidth(4, 70)
+            for column in range(len(displayList[0]) - 2):
+                # 每列根据内容设置
+                self.tableView.horizontalHeader().setSectionResizeMode(column,QHeaderView.ResizeToContents)
 
-            for i in range(5):
-                self.tableView.horizontalHeader().setSectionResizeMode(i,QHeaderView.ResizeToContents)
-
+            for row in range(len(displayList)):
+                # 随内容分配行高
+                self.tableView.verticalHeader().setSectionResizeMode(row, QHeaderView.ResizeToContents)
 
             # #TODO 优化3 删除当前选中的数据
             # indexs=self.tableView.selectionModel().selection().indexes()
