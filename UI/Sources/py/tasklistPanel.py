@@ -239,9 +239,9 @@ class TaskList(QWidget,Ui_TaskListWindow):
                             text = str(displayList[row][column]).replace("简短描述：","")
                             item = QStandardItem(text)
                         else:
-                            item = QStandardItem(displayList[row][column])
+                            item = QStandardItem(" "*4 + displayList[row][column] + " "*4)
                     else:
-                        item = QStandardItem(displayList[row][column])
+                        item = QStandardItem(" "*4 + displayList[row][column] + " "*4)                  # 显示内容增加空格，美观
                     # 设置每个位置的文本值
                     self.tableView.model.setItem(row, column, item)
 
