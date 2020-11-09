@@ -344,7 +344,7 @@
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255)</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="0,2">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <property name="spacing">
        <number>10</number>
       </property>
@@ -352,13 +352,13 @@
        <number>0</number>
       </property>
       <property name="topMargin">
-       <number>25</number>
+       <number>30</number>
       </property>
       <property name="rightMargin">
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>600</number>
+       <number>0</number>
       </property>
       <item>
        <widget class="QPushButton" name="taskInformation_btn">
@@ -413,6 +413,44 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="pcbInformation_btn">
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>未
+下
+P
+C
+B
+订
+单</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>439</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
      </layout>
     </widget>
    </item>
@@ -444,7 +482,7 @@
        <number>0</number>
       </property>
       <item row="0" column="0" colspan="3">
-       <widget class="QWidget" name="widget_2" native="true">
+       <widget class="QWidget" name="tableView_Top_wid" native="true">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -491,7 +529,7 @@
             <string notr="true">background-color: rgb(255, 255, 255);</string>
            </property>
            <property name="text">
-            <string>待处理任务:[7/7]</string>
+            <string>待处理任务:</string>
            </property>
           </widget>
          </item>
@@ -582,26 +620,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="object_choose_comb">
-           <property name="minimumSize">
-            <size>
-             <width>150</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="search_btn">
+          <widget class="QPushButton" name="new_btn">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -618,7 +637,7 @@
             <string notr="true">background-color: rgb(255, 255, 255);</string>
            </property>
            <property name="text">
-            <string>Search</string>
+            <string>刷新</string>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -633,7 +652,7 @@
         <property name="minimumSize">
          <size>
           <width>0</width>
-          <height>0</height>
+          <height>700</height>
          </size>
         </property>
         <property name="maximumSize">
@@ -654,7 +673,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QWidget" name="widget" native="true">
+       <widget class="QWidget" name="soWaring_wid" native="true">
         <property name="minimumSize">
          <size>
           <width>250</width>
@@ -677,8 +696,117 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="7" column="0" colspan="2" alignment="Qt::AlignHCenter">
-          <widget class="QRadioButton" name="radioButton">
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>规格描述:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QPushButton" name="add_btn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>新  增</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1" colspan="2">
+          <widget class="QLineEdit" name="projectSpec_Ledit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="3">
+          <widget class="QPushButton" name="search_btn">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>查  询</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="3">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" colspan="2">
+          <widget class="QLineEdit" name="projectName_Ledit">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="2" alignment="Qt::AlignHCenter">
+          <widget class="QRadioButton" name="allChoose_Rad">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -696,8 +824,52 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="2">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>成品描述:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="2" alignment="Qt::AlignHCenter">
+          <widget class="QRadioButton" name="inverse_Rad">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>25</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>反选</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
           <widget class="QPushButton" name="delete_btn">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -721,27 +893,8 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>规格描述:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1" colspan="2">
-          <widget class="QLineEdit" name="lineEdit_3">
+         <item row="2" column="1" colspan="2">
+          <widget class="QLineEdit" name="projectNum_Ledit">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -772,144 +925,6 @@
            </property>
            <property name="text">
             <string>成品料号:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>成品描述:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1" colspan="2">
-          <widget class="QLineEdit" name="lineEdit_2">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0" colspan="2">
-          <widget class="QPushButton" name="add_btn">
-           <property name="minimumSize">
-            <size>
-             <width>120</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>新  增</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="2" alignment="Qt::AlignHCenter">
-          <widget class="QRadioButton" name="radioButton_2">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>反选</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0" colspan="3">
-          <widget class="QLabel" name="label_5">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="3">
-          <widget class="QPushButton" name="pushButton">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>50</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>查  询</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="3">
-          <widget class="QLabel" name="label_4">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="2">
-          <widget class="QLineEdit" name="lineEdit">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0" colspan="3">
-          <widget class="QLineEdit" name="lineEdit_4">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>25</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>25</height>
-            </size>
            </property>
           </widget>
          </item>
@@ -1074,8 +1089,8 @@
    <slot>listChoose_comb_change()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>949</x>
-     <y>54</y>
+     <x>1124</x>
+     <y>56</y>
     </hint>
     <hint type="destinationlabel">
      <x>910</x>
@@ -1084,7 +1099,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>search_btn</sender>
+   <sender>new_btn</sender>
    <signal>clicked()</signal>
    <receiver>TaskListWindow</receiver>
    <slot>refreshWebtext()</slot>
@@ -1147,6 +1162,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pcbInformation_btn</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>pcbInformation_btn_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>6</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-7</x>
+     <y>421</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>search_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>projectNumSearch()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>154</x>
+     <y>423</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>78</x>
+     <y>933</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>taskList_btn_click()</slot>
@@ -1160,5 +1207,7 @@
   <slot>waring_btn_click()</slot>
   <slot>listChoose_comb_change()</slot>
   <slot>refreshWebtext()</slot>
+  <slot>pcbInformation_btn_click()</slot>
+  <slot>projectNumSearch()</slot>
  </slots>
 </ui>

@@ -5,7 +5,8 @@ from PyQt5.QtWebEngineWidgets import *
 
 class TaskList(QWidget,Ui_TaskListWindow):
 
-    listChoose_comb_change_signal = pyqtSignal(str,str)
+    listChoose_comb_change_signal = pyqtSignal(str, str)
+    search_btn_checked_signal = pyqtSignal(str, str, str)
     refreshWebtext_signal = pyqtSignal()
 
     def __init__(self,webtext,displayList,cookies):
@@ -21,8 +22,8 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.btn_checkFalse('taskList_btn')             # 设置填写新表单等按钮取消
         self.taskInformation_btn.setChecked(True)       # 设置订单信息按钮选中
         self.waring_btn.setChecked(False)               # 设置注意事项按钮取消
-        self.add_btn.setHidden(True)                    # 设置注意事项增加按钮隐藏
-        self.delete_btn.setHidden(True)                 # 设置注意事项增加按钮隐藏
+        self.pcbInformation_btn.setChecked(False)       # 设置未下PCB订单按钮取消
+        self.soWaring_wid.setHidden(True)               # 查询界面隐藏
 
         # 设置水平布局盒子，并命名为horizontalLayout3
         self.horizontalLayout3 = QtWidgets.QHBoxLayout(self.Web_wid)
@@ -180,17 +181,42 @@ class TaskList(QWidget,Ui_TaskListWindow):
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/All.aspx"))
             self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/History/All.aspx")))
 
-    def taskInformation_btn_click(self,checked):
+    def taskInformation_btn_click(self,checked):                # 订单信息按钮按下
         if checked :
+            self.tableView_Top_wid.setHidden(False)             # 打开listChoose等
             self.listChoose_comb.setEnabled(True)               # 设置生产指示单下拉框打开
-            self.waring_btn.setChecked(False)
+            self.waring_btn.setChecked(False)                   # 设置其他按钮关闭
+            self.pcbInformation_btn.setChecked(False)           # 设置其他按钮关闭
+            self.soWaring_wid.setHidden(True)                   # 设置料号查询窗口关闭
         else:
             self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
+            self.taskInformation_btn.setChecked(True)
 
-    def waring_btn_click(self,checked):
+    def waring_btn_click(self,checked):                         # 订单注意事项按钮按下
         if checked:
+            self.soWaring_wid.setHidden(False)                   # 打开料号查询窗口
+            self.tableView_Top_wid.setHidden(True)              # 订单查询窗口关闭
             self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
-            self.taskInformation_btn.setChecked(False)
+            self.taskInformation_btn.setChecked(False)          # 设置订单信息按钮关闭
+            self.pcbInformation_btn.setChecked(False)           # 设置PCB未下订单按钮关闭
+        else:
+            self.waring_btn.setChecked(True)
+
+    def pcbInformation_btn_click(self,checked):
+        if checked:
+            self.soWaring_wid.setHidden(True)                   # 关闭料号查询窗口
+            self.tableView_Top_wid.setHidden(True)              # 关闭订单查询窗口
+            self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
+            self.taskInformation_btn.setChecked(False)          # 设置订单信息按钮关闭
+            self.waring_btn.setChecked(False)           # 设置PCB未下订单按钮关闭
+        else:
+            self.pcbInformation_btn.setChecked(True)
+
+    def projectNumSearch(self):
+        projectName = self.projectName_Ledit.text()
+        projectNum = self.projectNum_Ledit.text()
+        projectSpec = self.projectSpec_Ledit.text()
+        self.search_btn_checked_signal.emit(projectName,projectNum,projectSpec)
 
     def btn_checkFalse(self,set_btn_checkFalse):
         #
@@ -207,7 +233,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
                 #print(btn.objectName())
                 btn.setChecked(False)
 
-    def displayTablelist(self,displayList):
+    def displayTablelist(self,displayList,head):
 
         if len(displayList) != 0:
             # 编辑待处理任务数量
@@ -221,7 +247,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             # 设置数据层次结构，m行n列
             self.tableView.model = QStandardItemModel(len(displayList), len(displayList[0])-2)
             # 设置水平方向四个头标签文本内容
-            self.tableView.model.setHorizontalHeaderLabels(['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息'])
+            self.tableView.model.setHorizontalHeaderLabels(head)
 
             # Todo 优化2 添加数据
             # self.model.appendRow([

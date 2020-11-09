@@ -1,5 +1,6 @@
 from UI.Sources.py.loginPanel import LoginPanel
 from UI.Sources.py.tasklistPanel import TaskList
+from UI.Sources.py.excelPandas import dataAnalysis
 from PyQt5.Qt import *
 from Parsing_RDM import WebText
 
@@ -26,6 +27,8 @@ if __name__ == '__main__':
     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
 
+    data = dataAnalysis("", "", "")
+
     # 槽函数
     def login(account,pwd):
         errorFlag, Cookies = rdmWeb.getCookie(extranetlUrl["login"],account,pwd)
@@ -46,7 +49,8 @@ if __name__ == '__main__':
 
     def displaychange(webtext,liststr):
         list = rdmWeb.getsolist(webtext,liststr)
-        tasklistpanel.displayTablelist(list)
+        header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
+        tasklistpanel.displayTablelist(list,header)
 
     def newWebtext():
         newWebtext = rdmWeb.gethtmltext("get", extranetlUrl['taskList'], **headers)
@@ -54,11 +58,18 @@ if __name__ == '__main__':
         tasklistpanel.webtext = newWebtext
         tasklistpanel.listChoose_comb_change()
 
+    def searchProjectNum(projectName,projectNum,projectSpec):
+        Data =data.Screen(projectName,projectNum,projectSpec)
+        print(Data.head)
+        #tasklistpanel.displayTablelist(Data.values,Data.head())
+
+
 
     #信号连接
     loginpanel.check_login_Btn_signal.connect(login)
     tasklistpanel.listChoose_comb_change_signal.connect(displaychange)
     tasklistpanel.refreshWebtext_signal.connect(newWebtext)
+    tasklistpanel.search_btn_checked_signal.connect(searchProjectNum)
 
 
     loginpanel.show()
