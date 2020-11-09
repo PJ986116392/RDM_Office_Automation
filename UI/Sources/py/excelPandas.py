@@ -32,5 +32,5 @@ class dataAnalysis(object):
 
 if __name__ == '__main__':
     data = dataAnalysis('p65&53','','')
-    data = data.Screen('p65&53','','')
-    print(data.values.shape)
+    data = data.Screen('p65&53','','AV&Ypbpr')
+    print(data.shape)

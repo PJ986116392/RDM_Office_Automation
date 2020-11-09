@@ -188,6 +188,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.waring_btn.setChecked(False)                   # 设置其他按钮关闭
             self.pcbInformation_btn.setChecked(False)           # 设置其他按钮关闭
             self.soWaring_wid.setHidden(True)                   # 设置料号查询窗口关闭
+            self.refreshWebtext()
         else:
             self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
             self.taskInformation_btn.setChecked(True)
@@ -200,7 +201,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.taskInformation_btn.setChecked(False)          # 设置订单信息按钮关闭
             self.pcbInformation_btn.setChecked(False)           # 设置PCB未下订单按钮关闭
         else:
-            self.waring_btn.setChecked(True)
+            self.soWaring_wid.setHidden(True)
 
     def pcbInformation_btn_click(self,checked):
         if checked:
@@ -236,8 +237,10 @@ class TaskList(QWidget,Ui_TaskListWindow):
     def displayTablelist(self,displayList,head):
 
         if len(displayList) != 0:
+            rows = displayList.shape[0]              # 行计算
+            colums = displayList.shape[1]            # 列计算
             # 编辑待处理任务数量
-            self.displayPro_labe.setText('待处理任务:[%s/%s]' % (len(displayList),len(displayList)))
+            self.displayPro_labe.setText('待处理任务:[%s/%s]' % (rows,rows))
             # 设置表格内容不能被修改
             #self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers0No)
             # 设置表格选择方式，整行选择
@@ -245,7 +248,8 @@ class TaskList(QWidget,Ui_TaskListWindow):
             # 设置表格不带边框
             self.tableView.setShowGrid(False)
             # 设置数据层次结构，m行n列
-            self.tableView.model = QStandardItemModel(len(displayList), len(displayList[0])-2)
+            self.tableView.model = QStandardItemModel(rows, colums)
+            self.tableView.model.clear()
             # 设置水平方向四个头标签文本内容
             self.tableView.model.setHorizontalHeaderLabels(head)
 
@@ -257,9 +261,9 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #     QStandardItem('row %s,column %s' % (11,11)),
             # ])
 
-            for row in range(len(displayList)):
-                for column in range(len(displayList[0])-2):
-                    if column == (len(displayList[0])-3) :                                      # 针对异常工艺反馈表，删除最后一列简短描述
+            for row in range(rows):
+                for column in range(colums):
+                    if column == colums :                                      # 针对异常工艺反馈表，删除最后一列简短描述
                         # str。find 函数，如果未找到字符串返回-1，找到了返回子字符串index
                         if str(displayList[row][column]).find("简短描述：") != -1:
                             text = str(displayList[row][column]).replace("简短描述：","")
@@ -279,11 +283,11 @@ class TaskList(QWidget,Ui_TaskListWindow):
             #水平方向，表格大小拓展到适当的尺寸
             self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
-            for column in range(len(displayList[0]) - 2):
+            for column in range(colums):
                 # 每列根据内容设置
                 self.tableView.horizontalHeader().setSectionResizeMode(column,QHeaderView.ResizeToContents)
 
-            for row in range(len(displayList)):
+            for row in range(rows):
                 # 随内容分配行高
                 self.tableView.verticalHeader().setSectionResizeMode(row, QHeaderView.ResizeToContents)
 

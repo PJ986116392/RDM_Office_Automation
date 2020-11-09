@@ -50,7 +50,7 @@ if __name__ == '__main__':
     def displaychange(webtext,liststr):
         list = rdmWeb.getsolist(webtext,liststr)
         header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
-        tasklistpanel.displayTablelist(list,header)
+        tasklistpanel.displayTablelist(list[:,:-2],header)
 
     def newWebtext():
         newWebtext = rdmWeb.gethtmltext("get", extranetlUrl['taskList'], **headers)
@@ -60,8 +60,8 @@ if __name__ == '__main__':
 
     def searchProjectNum(projectName,projectNum,projectSpec):
         Data =data.Screen(projectName,projectNum,projectSpec)
-        print(Data.head)
-        #tasklistpanel.displayTablelist(Data.values,Data.head())
+        print(Data.values)
+        tasklistpanel.displayTablelist(Data.values[:,1:],Data.columns.values[1:])
 
 
 
