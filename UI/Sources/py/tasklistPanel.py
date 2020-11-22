@@ -6,8 +6,9 @@ from PyQt5.QtWebEngineWidgets import *
 class TaskList(QWidget,Ui_TaskListWindow):
 
     listChoose_comb_change_signal = pyqtSignal(str, str)
-    search_btn_checked_signal = pyqtSignal(str, str, str)
     refreshWebtext_signal = pyqtSignal()
+    search_btn_checked_signal = pyqtSignal(str, str, str)
+    waring_btn_click_signal = pyqtSignal()
 
     def __init__(self,webtext,displayList,cookies):
         # 基本参数初始化
@@ -200,6 +201,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
             self.taskInformation_btn.setChecked(False)          # 设置订单信息按钮关闭
             self.pcbInformation_btn.setChecked(False)           # 设置PCB未下订单按钮关闭
+            self.waring_btn_click_signal.emit()
         else:
             self.soWaring_wid.setHidden(True)
 
@@ -236,6 +238,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     def displayTablelist(self,displayList,head):
 
+
         if len(displayList) != 0:
             rows = displayList.shape[0]              # 行计算
             colums = displayList.shape[1]            # 列计算
@@ -249,7 +252,6 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.tableView.setShowGrid(False)
             # 设置数据层次结构，m行n列
             self.tableView.model = QStandardItemModel(rows, colums)
-            self.tableView.model.clear()
             # 设置水平方向四个头标签文本内容
             self.tableView.model.setHorizontalHeaderLabels(head)
 
@@ -263,15 +265,15 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
             for row in range(rows):
                 for column in range(colums):
-                    if column == colums :                                      # 针对异常工艺反馈表，删除最后一列简短描述
+                    if column != colums-1:                                      # 针对异常工艺反馈表，删除最后一列简短描述
+                        item = QStandardItem(" "*4 + str(displayList[row][column]) + " "*4)                  # 显示内容增加空格，美观
+                    else:
                         # str。find 函数，如果未找到字符串返回-1，找到了返回子字符串index
                         if str(displayList[row][column]).find("简短描述：") != -1:
                             text = str(displayList[row][column]).replace("简短描述：","")
                             item = QStandardItem(text)
                         else:
-                            item = QStandardItem(" "*4 + displayList[row][column] + " "*4)
-                    else:
-                        item = QStandardItem(" "*4 + displayList[row][column] + " "*4)                  # 显示内容增加空格，美观
+                            item = QStandardItem(displayList[row][column])
                     # 设置每个位置的文本值
                     self.tableView.model.setItem(row, column, item)
 

@@ -49,8 +49,9 @@ if __name__ == '__main__':
 
     def displaychange(webtext,liststr):
         list = rdmWeb.getsolist(webtext,liststr)
-        header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
-        tasklistpanel.displayTablelist(list[:,:-2],header)
+        if list.shape[0] !=0:
+            header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
+            tasklistpanel.displayTablelist(list[:,:-2],header)
 
     def newWebtext():
         newWebtext = rdmWeb.gethtmltext("get", extranetlUrl['taskList'], **headers)
@@ -59,17 +60,22 @@ if __name__ == '__main__':
         tasklistpanel.listChoose_comb_change()
 
     def searchProjectNum(projectName,projectNum,projectSpec):
-        Data =data.Screen(projectName,projectNum,projectSpec)
-        print(Data.values)
-        tasklistpanel.displayTablelist(Data.values[:,1:],Data.columns.values[1:])
+        dataFilter,Waring_data,nanRow =data.Screen(projectName,projectNum,projectSpec)
+        if dataFilter.shape[0] != 0:
+            tasklistpanel.displayTablelist(dataFilter.values,dataFilter.columns.values)
 
 
+    def diswaringInformation():
+        Data = data.getWaringInf()
+        if Data.shape[0] != 0:
+            tasklistpanel.displayTablelist(Data.values,Data.columns.values)
 
     #信号连接
     loginpanel.check_login_Btn_signal.connect(login)
     tasklistpanel.listChoose_comb_change_signal.connect(displaychange)
     tasklistpanel.refreshWebtext_signal.connect(newWebtext)
     tasklistpanel.search_btn_checked_signal.connect(searchProjectNum)
+    tasklistpanel.waring_btn_click_signal.connect(diswaringInformation)
 
 
     loginpanel.show()
