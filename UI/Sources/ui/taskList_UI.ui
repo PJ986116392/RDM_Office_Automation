@@ -1185,6 +1185,38 @@ B
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>allChoose_Rad</sender>
+   <signal>clicked()</signal>
+   <receiver>display_tab</receiver>
+   <slot>selectAll()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1174</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1180</x>
+     <y>170</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>inverse_Rad</sender>
+   <signal>clicked()</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>inverse_rad_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1233</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1282</x>
+     <y>556</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>taskList_btn_click()</slot>
@@ -1203,5 +1235,6 @@ B
   <slot>search_btn_click()</slot>
   <slot>add_btn_click()</slot>
   <slot>del_btn_click()</slot>
+  <slot>inverse_rad_checked()</slot>
  </slots>
 </ui>

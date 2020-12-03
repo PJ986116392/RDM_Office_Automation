@@ -19,17 +19,29 @@ class Addwarinf(QWidget,Ui_Form):
         self.addwindow_search_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text(),'addWindow')
 
     def inverse_rad_checked(self):
+        # 获取当前选中的行 QmodelIndex
         selectIndex = self.display_tab.selectionModel().selectedIndexes()
-        self.display_tab.selectionModel().clear()
+        selectRow = []
+        inverseRow = []
+        # QmodelIndex数据转成int，换得到相应的row
+        for index in selectIndex:
+            if index.column() == 0:
+                selectRow.append(index.row())
+        # 清除选中的行，准备重新选择
+        self.display_tab.clearSelection()
+        # 获取当前tableview数据的行数
+        # 注意语法：self.display_tab.model().rowCount()会报错（model多了括号），但是C++又需要带括号
+        indexCount = self.display_tab.model.rowCount()
+        # 得到取反的行号
+        for i in range(indexCount):
+            if i not in selectRow:
+                inverseRow.append(i)
+        # 数据转换，将int转化成QmodelIndex
+        indexes = [self.display_tab.model.index(r, 0) for r in inverseRow]
+        # 设置选中模式
         mode = QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
-        for index in self.display_tab.model().index():
-            if index not in selectIndex:
-                self.display_tab.selectionModel().select(index, mode)
-
-        # rows = [1, 2, 3]
-        # indexes = [self.display_tab.model.index(r, 0) for r in rows]
-        # mode = QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
-        # [self.display_tab.selectionModel().select(index, mode) for index in indexes]
+        # 最终选中，实现反选
+        [self.display_tab.selectionModel().select(index, mode) for index in indexes]
 
     def displayTablelist(self,displayList,head):
         if len(displayList) != 0:

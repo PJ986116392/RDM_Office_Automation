@@ -304,6 +304,8 @@ class Ui_TaskListWindow(object):
         self.search_btn.clicked.connect(TaskListWindow.search_btn_click)
         self.add_btn.clicked.connect(TaskListWindow.add_btn_click)
         self.del_btn.clicked.connect(TaskListWindow.del_btn_click)
+        self.allChoose_Rad.clicked.connect(self.display_tab.selectAll)
+        self.inverse_Rad.clicked.connect(TaskListWindow.inverse_rad_checked)
         QtCore.QMetaObject.connectSlotsByName(TaskListWindow)
         TaskListWindow.setTabOrder(self.newForm_btn, self.draft_btn)
         TaskListWindow.setTabOrder(self.draft_btn, self.taskList_btn)
