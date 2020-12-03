@@ -7,8 +7,9 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     listChoose_comb_change_signal = pyqtSignal(str, str)
     refreshWebtext_signal = pyqtSignal()
-    search_btn_checked_signal = pyqtSignal(str, str, str)
+    search_btn_click_signal = pyqtSignal(str, str, str,str)
     waring_btn_click_signal = pyqtSignal()
+    add_btn_click_signal = pyqtSignal(str, str, str)
 
     def __init__(self,webtext,displayList,cookies):
         # 基本参数初始化
@@ -17,14 +18,15 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.displayList = displayList
         self.cookies = cookies
         self.setupUi(self)
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)  # 去掉标题栏
+        #self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)  # 去掉标题栏
         # 窗口控件状态初始化
         self.taskList_btn.setChecked(True)              # 设置待处理任务按钮选中
         self.btn_checkFalse('taskList_btn')             # 设置填写新表单等按钮取消
         self.taskInformation_btn.setChecked(True)       # 设置订单信息按钮选中
         self.waring_btn.setChecked(False)               # 设置注意事项按钮取消
         self.pcbInformation_btn.setChecked(False)       # 设置未下PCB订单按钮取消
-        self.soWaring_wid.setHidden(True)               # 查询界面隐藏
+        self.search_wid.setHidden(True)                 # 查询界面隐藏
+        self.edit_wid.setHidden(True)                   # 隐藏增加，删除按键窗口
 
         # 设置水平布局盒子，并命名为horizontalLayout3
         self.horizontalLayout3 = QtWidgets.QHBoxLayout(self.Web_wid)
@@ -93,6 +95,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
         # 执行动画
         animation.start()
 
+    # Top_wid 按键被点击
     def listChoose_comb_change(self):
         if self.taskList_btn.isChecked():
             if self.taskInformation_btn.isChecked() and not self.waring_btn.isChecked():  # 查看电子流信息
@@ -182,13 +185,15 @@ class TaskList(QWidget,Ui_TaskListWindow):
                 QWebEngineProfile.defaultProfile().cookieStore().setCookie(cookie, QUrl(r"http://rdm.toptech-developer.com:81/bpm/History/All.aspx"))
             self.qwebengine.load(QUrl((r"http://rdm.toptech-developer.com:81/bpm/History/All.aspx")))
 
+    # Left_wid 按键被点击
     def taskInformation_btn_click(self,checked):                # 订单信息按钮按下
         if checked :
             self.tableView_Top_wid.setHidden(False)             # 打开listChoose等
             self.listChoose_comb.setEnabled(True)               # 设置生产指示单下拉框打开
             self.waring_btn.setChecked(False)                   # 设置其他按钮关闭
             self.pcbInformation_btn.setChecked(False)           # 设置其他按钮关闭
-            self.soWaring_wid.setHidden(True)                   # 设置料号查询窗口关闭
+            self.search_wid.setHidden(True)                     # 设置料号查询窗口关闭
+            self.edit_wid.setHidden(True)                       # 设置add，del按键隐藏
             self.refreshWebtext()
         else:
             self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
@@ -196,18 +201,19 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     def waring_btn_click(self,checked):                         # 订单注意事项按钮按下
         if checked:
-            self.soWaring_wid.setHidden(False)                   # 打开料号查询窗口
+            self.search_wid.setHidden(False)                   # 打开料号查询窗口
             self.tableView_Top_wid.setHidden(True)              # 订单查询窗口关闭
             self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
             self.taskInformation_btn.setChecked(False)          # 设置订单信息按钮关闭
             self.pcbInformation_btn.setChecked(False)           # 设置PCB未下订单按钮关闭
+            self.edit_wid.setHidden(False)                       # 设置add，del按键隐藏
             self.waring_btn_click_signal.emit()
         else:
-            self.soWaring_wid.setHidden(True)
+            self.search_wid.setHidden(True)
 
     def pcbInformation_btn_click(self,checked):
         if checked:
-            self.soWaring_wid.setHidden(True)                   # 关闭料号查询窗口
+            self.search_wid.setHidden(True)                   # 关闭料号查询窗口
             self.tableView_Top_wid.setHidden(True)              # 关闭订单查询窗口
             self.listChoose_comb.setEnabled(False)              # 设置生产指示单下拉框禁止
             self.taskInformation_btn.setChecked(False)          # 设置订单信息按钮关闭
@@ -215,12 +221,17 @@ class TaskList(QWidget,Ui_TaskListWindow):
         else:
             self.pcbInformation_btn.setChecked(True)
 
-    def projectNumSearch(self):
-        projectName = self.projectName_Ledit.text()
-        projectNum = self.projectNum_Ledit.text()
-        projectSpec = self.projectSpec_Ledit.text()
-        self.search_btn_checked_signal.emit(projectName,projectNum,projectSpec)
+    # search_wid 查询按钮被点击
+    def search_btn_click(self):
+        self.search_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text(),'tasklistWindow')
 
+    def add_btn_click(self):
+        self.add_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text())
+
+    def del_btn_click(self):
+        pass
+
+    # 电子流类型框被选择
     def btn_checkFalse(self,set_btn_checkFalse):
         #
 
@@ -238,22 +249,21 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     def displayTablelist(self,displayList,head):
 
-
         if len(displayList) != 0:
             rows = displayList.shape[0]              # 行计算
             colums = displayList.shape[1]            # 列计算
             # 编辑待处理任务数量
             self.displayPro_labe.setText('待处理任务:[%s/%s]' % (rows,rows))
             # 设置表格内容不能被修改
-            #self.tableView.setEditTriggers(QAbstractItemView.NoEditTriggers0No)
+            #self.display_tab.setEditTriggers(QAbstractItemView.NoEditTriggers0No)
             # 设置表格选择方式，整行选择
-            self.tableView.setSelectionBehavior(1)
+            self.display_tab.setSelectionBehavior(1)
             # 设置表格不带边框
-            self.tableView.setShowGrid(False)
+            self.display_tab.setShowGrid(False)
             # 设置数据层次结构，m行n列
-            self.tableView.model = QStandardItemModel(rows, colums)
+            self.display_tab.model = QStandardItemModel(rows, colums)
             # 设置水平方向四个头标签文本内容
-            self.tableView.model.setHorizontalHeaderLabels(head)
+            self.display_tab.model.setHorizontalHeaderLabels(head)
 
             # Todo 优化2 添加数据
             # self.model.appendRow([
@@ -275,30 +285,33 @@ class TaskList(QWidget,Ui_TaskListWindow):
                         else:
                             item = QStandardItem(displayList[row][column])
                     # 设置每个位置的文本值
-                    self.tableView.model.setItem(row, column, item)
+                    self.display_tab.model.setItem(row, column, item)
 
-            self.tableView.setModel(self.tableView.model)
+            self.display_tab.setModel(self.display_tab.model)
 
             #todo 优化1 表格填满窗口
             #水平方向标签拓展剩下的窗口部分，填满表格
-            self.tableView.horizontalHeader().setStretchLastSection(True)
+            self.display_tab.horizontalHeader().setStretchLastSection(True)
             #水平方向，表格大小拓展到适当的尺寸
-            self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+            self.display_tab.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
             for column in range(colums):
                 # 每列根据内容设置
-                self.tableView.horizontalHeader().setSectionResizeMode(column,QHeaderView.ResizeToContents)
+                self.display_tab.horizontalHeader().setSectionResizeMode(column,QHeaderView.ResizeToContents)
 
             for row in range(rows):
                 # 随内容分配行高
-                self.tableView.verticalHeader().setSectionResizeMode(row, QHeaderView.ResizeToContents)
+                self.display_tab.verticalHeader().setSectionResizeMode(row, QHeaderView.ResizeToContents)
 
             # #TODO 优化3 删除当前选中的数据
-            # indexs=self.tableView.selectionModel().selection().indexes()
+            # indexs=self.display_tab.selectionModel().selection().indexes()
             # print(indexs)
             # if len(indexs)>0:
             #     index=indexs[0]
             #     self.model.removeRows(index.row(),1)
+        else:
+            self.display_tab.model = QStandardItemModel(0, 0)
+            self.display_tab.setModel(self.display_tab.model)
 
     def refreshWebtext(self):
         self.refreshWebtext_signal.emit()
