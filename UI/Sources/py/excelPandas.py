@@ -1,21 +1,26 @@
 import pandas as pd
-import numpy as np
+import os
 
 class dataAnalysis(object):
     def __init__(self,projectName,projectNum,projectSpec):
         self.projectName = projectName
         self.projectNum = projectNum
         self.projectSpec = projectSpec
-        self.io = r'E:\PycharmProjects\RDM_Office_Automation\ExcelLib\dataLib.xlsx'
+        # 获取项目文件路径
+        self.io = str(os.path.abspath(os.path.join(os.getcwd(), "../"))) + '\ExcelLib'
 
-    def Screen(self,projectName,projectNum,projectSpec,windowName):                            # 根据输入字符串，筛选出符合条件的data
-        if windowName =="tasklistWindow":
-            sourceData = pd.read_excel(self.io, sheet_name="WaringInformation")
-        elif windowName =="addWindow":
-            sourceData = pd.read_excel(self.io, sheet_name="Lib")
+
+    def Screen(self,projectName,projectNum,projectSpec,fileName):                            # 根据输入字符串，筛选出符合条件的data
+        sourceData = self.getSourcedata(fileName)
         dataFilter = self.lookFordata(projectName,projectNum,projectSpec,sourceData)
         return dataFilter.values,dataFilter.columns.values
 
+    def getFilepath(self,fileName):
+        return self.io + '\\' + fileName + '.xls'
+
+    def getSourcedata(self,fileName):
+        filePath = self.getFilepath(fileName)
+        return pd.read_excel(filePath)
 
     def lookFordata(self,projectName,projectNum,projectSpec,sourceData):
         ###################################################################################################################
@@ -66,12 +71,12 @@ class dataAnalysis(object):
 
         return data
 
-    def getWaringInf(self):
-        data = pd.read_excel(self.io, sheet_name="WaringInformation")
-        return data
 
-
+    def deldata(self,sourceData,delList):
+        resultData = sourceData[~sourceData['ProjectNum'].isin(delList)]
+        filePtah = self.getFilepath('WaringInformation')
+        resultData.to_excel(filePtah,sheet_name="WaringInformation",index=False)
 
 if __name__ == '__main__':
     data = dataAnalysis('','','')
-    data = data.Screen('12AT07','','')
+    data = data.Screen('12AT07','','','WaringInformation')

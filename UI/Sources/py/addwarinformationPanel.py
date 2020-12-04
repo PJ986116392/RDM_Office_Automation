@@ -16,7 +16,7 @@ class Addwarinf(QWidget,Ui_Form):
 
     # search_wid 查询按钮被点击
     def search_btn_click(self):
-        self.addwindow_search_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text(),'addWindow')
+        self.addwindow_search_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text(),'Lib')
 
     def inverse_rad_checked(self):
         # 获取当前选中的行 QmodelIndex

@@ -19,16 +19,13 @@ if __name__ == '__main__':
         'taskList': 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx',
         'newTask': '',
     }
-
     intranetUrl = {
         'login': 'http://172.168.5.151:81/bpm/Home/Login.aspx',
         'taskList': 'http://172.168.5.151:81/bpm/PostRequest/Default.aspx',
         'newTask': '',
     }
-
     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
-
     data = dataAnalysis("", "", "")
 
     # 槽函数
@@ -60,9 +57,9 @@ if __name__ == '__main__':
         tasklistpanel.webtext = newWebtext
         tasklistpanel.listChoose_comb_change()
 
-    def searchProjectNum(projectName,projectNum,projectSpec,windowName):
-        dataFilter,datafiltCol =data.Screen(projectName,projectNum,projectSpec,windowName)
-        if windowName =="tasklistWindow":
+    def searchProjectNum(projectName,projectNum,projectSpec,fileName):
+        dataFilter,datafiltCol =data.Screen(projectName,projectNum,projectSpec,fileName)
+        if fileName =="WaringInformation":
             if dataFilter.shape[0] != 0:
                 tasklistpanel.add_btn.setEnabled(False)
                 tasklistpanel.del_btn.setEnabled(True)
@@ -75,7 +72,7 @@ if __name__ == '__main__':
                 tasklistpanel.add_btn.setEnabled(True)
                 tasklistpanel.del_btn.setEnabled(False)
                 tasklistpanel.displayTablelist([], [])
-        elif windowName == "addWindow":
+        elif fileName == "Lib":
             if dataFilter.shape[0] != 0:
                 addwarinf.waringIforma_Ledit.setEnabled(True)
                 addwarinf.commit_btn.setEnabled(True)
@@ -84,7 +81,7 @@ if __name__ == '__main__':
                 addwarinf.displayTablelist(dataFilter,datafiltCol)
 
     def diswaringInformation():
-        Data = data.getWaringInf()
+        Data = data.getSourcedata('WaringInformation')
         if Data.shape[0] != 0:
             tasklistpanel.displayTablelist(Data.values,Data.columns.values)
 
@@ -95,6 +92,10 @@ if __name__ == '__main__':
         addwarinf.show()
         addwarinf.search_btn.click()
 
+    def delNumList(delList):
+        sourcedata = data.getSourcedata('WaringInformation')
+        result = data.deldata(sourcedata,delList)
+
     #信号连接
     loginpanel.check_login_Btn_signal.connect(login)
     tasklistpanel.listChoose_comb_change_signal.connect(displaychange)
@@ -102,6 +103,7 @@ if __name__ == '__main__':
     tasklistpanel.search_btn_click_signal.connect(searchProjectNum)
     tasklistpanel.waring_btn_click_signal.connect(diswaringInformation)
     tasklistpanel.add_btn_click_signal.connect(addWarinformation)
+    tasklistpanel.del_btn_click_signal.connect(delNumList)
     addwarinf.addwindow_search_btn_click_signal.connect(searchProjectNum)
 
 

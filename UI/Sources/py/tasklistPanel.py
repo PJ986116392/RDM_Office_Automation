@@ -10,6 +10,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
     search_btn_click_signal = pyqtSignal(str, str, str,str)
     waring_btn_click_signal = pyqtSignal()
     add_btn_click_signal = pyqtSignal(str, str, str)
+    del_btn_click_signal = pyqtSignal(list)
 
     def __init__(self,webtext,displayList,cookies):
         # 基本参数初始化
@@ -223,7 +224,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     # search_wid 查询按钮被点击
     def search_btn_click(self):
-        self.search_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text(),'tasklistWindow')
+        self.search_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text(),'WaringInformation')
 
     def add_btn_click(self):
         self.add_btn_click_signal.emit(self.projectName_Ledit.text(),self.projectNum_Ledit.text(),self.projectSpec_Ledit.text())
@@ -232,16 +233,18 @@ class TaskList(QWidget,Ui_TaskListWindow):
         #TODO 优化3 删除当前选中的数据
         selectIndex = self.display_tab.selectionModel().selectedIndexes()
         selectRow = []
+        delList = []
         # QmodelIndex数据转成int，换得到相应的row
         for index in selectIndex:
             if index.column() == 0:
+                delNum = str(self.display_tab.model.index(index.row(),0).data()).strip()
+                delList.append(delNum)
                 selectRow.append(index.row())
-        # 将列表，方向排列，即原始数据[1,2,3]之后为[3,2,1]
-        # for 循环，优先删除后面的数据不会对前面的数据造成影响，不会导致误删除
         selectRow.reverse()
         if len(selectRow)>0:
             for row in selectRow:
                 self.display_tab.model.removeRows(row,1)
+        self.del_btn_click_signal.emit(delList)
 
     # 电子流类型框被选择
     def btn_checkFalse(self,set_btn_checkFalse):
