@@ -50,6 +50,8 @@ if __name__ == '__main__':
         if list.shape[0] !=0:
             header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
             tasklistpanel.displayTablelist(list[:,:-2],header)
+        else:
+            tasklistpanel.displayTablelist([], [])
 
     def newWebtext():
         newWebtext = rdmWeb.gethtmltext("get", extranetlUrl['taskList'], **headers)
@@ -79,12 +81,16 @@ if __name__ == '__main__':
                 addwarinf.allChoose_Rad.setEnabled(True)
                 addwarinf.inverse_Rad.setEnabled(True)
                 addwarinf.displayTablelist(dataFilter,datafiltCol)
-        tasklistpanel.displayTablelist(dataFilter, datafiltCol)
+            else:
+                addwarinf.waringIforma_Ledit.setEnabled(False)
+                addwarinf.commit_btn.setEnabled(False)
+                addwarinf.allChoose_Rad.setEnabled(False)
+                addwarinf.inverse_Rad.setEnabled(False)
+                addwarinf.displayTablelist([],[])
 
     def diswaringInformation():
         Data = data.getSourcedata('WaringInformation')
         tasklistpanel.displayTablelist(Data.values,Data.columns.values)
-
 
     def addWarinformation(projectName,projectNum,projectSpec):
         addwarinf.projectName_Ledit.setText(projectName)
@@ -103,6 +109,9 @@ if __name__ == '__main__':
         # 显示
         diswaringInformation()
 
+    def closeAddwindow():
+        diswaringInformation()
+
     #信号连接
     loginpanel.check_login_Btn_signal.connect(login)
     tasklistpanel.listChoose_comb_change_signal.connect(displaychange)
@@ -113,6 +122,7 @@ if __name__ == '__main__':
     tasklistpanel.del_btn_click_signal.connect(delNumList)
     addwarinf.addwindow_search_btn_click_signal.connect(searchProjectNum)
     addwarinf.addwindow_combit_btn_click_signal.connect(addData)
+    addwarinf.addwindow_close_signal.connect(closeAddwindow)
 
 
     loginpanel.show()

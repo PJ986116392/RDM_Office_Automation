@@ -5,6 +5,7 @@ from PyQt5 import QtWidgets,QtCore
 class Addwarinf(QWidget,Ui_Form):
     addwindow_search_btn_click_signal = pyqtSignal(str, str, str,str)
     addwindow_combit_btn_click_signal = pyqtSignal(list)
+    addwindow_close_signal = pyqtSignal()
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -112,6 +113,10 @@ class Addwarinf(QWidget,Ui_Form):
         else:
             self.display_tab.model = QStandardItemModel(0, 0)
             self.display_tab.setModel(self.display_tab.model)
+
+    def closeEvent(self,event):
+        self.addwindow_close_signal.emit()
+
 
 if __name__ == "__main__":
     import sys
