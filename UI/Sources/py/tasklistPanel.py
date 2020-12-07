@@ -237,13 +237,14 @@ class TaskList(QWidget,Ui_TaskListWindow):
         # QmodelIndex数据转成int，换得到相应的row
         for index in selectIndex:
             if index.column() == 0:
-                delNum = str(self.display_tab.model.index(index.row(),0).data()).strip()
+                delNum = str(self.display_tab.model.index(index.row(),1).data()).strip()
                 delList.append(delNum)
                 selectRow.append(index.row())
         selectRow.reverse()
         if len(selectRow)>0:
             for row in selectRow:
                 self.display_tab.model.removeRows(row,1)
+        # 发送信号，处理pandas 数据，操作excel
         self.del_btn_click_signal.emit(delList)
 
     # 电子流类型框被选择

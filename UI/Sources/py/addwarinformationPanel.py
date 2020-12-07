@@ -4,6 +4,7 @@ from PyQt5 import QtWidgets,QtCore
 
 class Addwarinf(QWidget,Ui_Form):
     addwindow_search_btn_click_signal = pyqtSignal(str, str, str,str)
+    addwindow_combit_btn_click_signal = pyqtSignal(list)
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -42,6 +43,22 @@ class Addwarinf(QWidget,Ui_Form):
         mode = QtCore.QItemSelectionModel.Select | QtCore.QItemSelectionModel.Rows
         # 最终选中，实现反选
         [self.display_tab.selectionModel().select(index, mode) for index in indexes]
+
+    def combit_btn_click(self):
+        selectIndex = self.display_tab.selectionModel().selectedIndexes()
+        selectRow = []
+        addData = []
+        # QmodelIndex数据转成int，换得到相应的row
+        for index in selectIndex:
+            if index.column() == 0:
+                selectRow.append(index.row())
+        for row in selectRow:
+            projectNum = str(self.display_tab.model.index(row,0).data()).strip()
+            projectName = str(self.display_tab.model.index(row,1).data()).strip()
+            waringIformation = self.waringIforma_Ledit.text()
+            addData.append([projectName,projectNum,waringIformation])
+        self.close()
+        self.addwindow_combit_btn_click_signal.emit(addData)
 
     def displayTablelist(self,displayList,head):
         if len(displayList) != 0:

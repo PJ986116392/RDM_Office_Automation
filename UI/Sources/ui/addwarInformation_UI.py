@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'addwarInformation_UI.ui'
+# Form implementation generated from reading ui file 'F:\Project_Python\RDM_Office_Automation\UI\Sources\ui\addwarInformation_UI.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.1
 #
@@ -89,6 +89,7 @@ class Ui_Form(object):
         self.search_btn.clicked.connect(Form.search_btn_click)
         self.allChoose_Rad.clicked.connect(self.display_tab.selectAll)
         self.inverse_Rad.clicked.connect(Form.inverse_rad_checked)
+        self.commit_btn.clicked.connect(Form.combit_btn_click)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):

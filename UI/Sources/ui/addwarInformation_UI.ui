@@ -276,8 +276,8 @@
      <y>24</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1184</x>
-     <y>80</y>
+     <x>1195</x>
+     <y>161</y>
     </hint>
    </hints>
   </connection>
@@ -297,9 +297,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>commit_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>combit_btn_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1110</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1277</x>
+     <y>238</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>search_btn_click()</slot>
   <slot>inverse_rad_checked()</slot>
+  <slot>combit_btn_click()</slot>
  </slots>
 </ui>

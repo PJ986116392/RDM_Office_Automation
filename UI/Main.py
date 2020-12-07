@@ -79,11 +79,12 @@ if __name__ == '__main__':
                 addwarinf.allChoose_Rad.setEnabled(True)
                 addwarinf.inverse_Rad.setEnabled(True)
                 addwarinf.displayTablelist(dataFilter,datafiltCol)
+        tasklistpanel.displayTablelist(dataFilter, datafiltCol)
 
     def diswaringInformation():
         Data = data.getSourcedata('WaringInformation')
-        if Data.shape[0] != 0:
-            tasklistpanel.displayTablelist(Data.values,Data.columns.values)
+        tasklistpanel.displayTablelist(Data.values,Data.columns.values)
+
 
     def addWarinformation(projectName,projectNum,projectSpec):
         addwarinf.projectName_Ledit.setText(projectName)
@@ -96,6 +97,12 @@ if __name__ == '__main__':
         sourcedata = data.getSourcedata('WaringInformation')
         result = data.deldata(sourcedata,delList)
 
+    def addData(addData):
+        # 处理pandas数据
+        data.add_data(addData)
+        # 显示
+        diswaringInformation()
+
     #信号连接
     loginpanel.check_login_Btn_signal.connect(login)
     tasklistpanel.listChoose_comb_change_signal.connect(displaychange)
@@ -105,6 +112,7 @@ if __name__ == '__main__':
     tasklistpanel.add_btn_click_signal.connect(addWarinformation)
     tasklistpanel.del_btn_click_signal.connect(delNumList)
     addwarinf.addwindow_search_btn_click_signal.connect(searchProjectNum)
+    addwarinf.addwindow_combit_btn_click_signal.connect(addData)
 
 
     loginpanel.show()
