@@ -1,8 +1,7 @@
 import requests, urllib, bs4, re, string
 from bs4 import BeautifulSoup
 from urllib.parse import quote
-import os
-import fitz
+import os,fitz
 import numpy as np
 
 class WebText(object):                          # 爬虫技术类
@@ -129,6 +128,42 @@ class WebText(object):                          # 爬虫技术类
         getso = np.delete(getsolist, list_del, axis=0)  # 统一删除重复数据行
         return getso
 
+    def getSoinformation(self,url,pid):
+        header = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
+                  'Content-Type':'text/xml; charset=UTF-8',
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
+
+        xml_data = '''<?xml version='1.0'?>
+                   <Param>
+                        <Method>GetFormProcessData</Method>
+                        <PID>1235062</PID>
+                   </Param>
+                   '''
+        if re.search(r'\d{5,7}',xml_data):
+            xml_data = re.sub(r'\d{5,7}',pid,xml_data)
+            xml_data = xml_data.encode('utf-8')
+
+            try:
+                resp = requests.post(url, headers=header, cookies=self.cookies, timeout=30, data=xml_data)
+                # 如果状态不是200，引发HTTPError异常
+                resp.raise_for_status()
+                resp.encoding = resp.apparent_encoding
+                webText = resp.text
+                print(webText)
+                Prd_Name = re.search(r'<Prd_Name>.*</Prd_Name>',webText,re.M).group()[10:-11]    # 成品型号
+                Prd_no = re.search(r'<Prd_no>.*</Prd_no>',webText,re.M).group()[8:-9]       # 成品料号
+                SPC = re.search(r'<SPC>.*</SPC>',webText,re.M).group()[5:-6]                # 规格描述
+                Qty = re.search(r'<Qty>.*</Qty>',webText,re.M).group()[5:-6]                # 订单数量
+                SO_NO = re.search(r'<SO_NO>.*</SO_NO>',webText,re.M).group()[7:-8]          # SO号
+                Business = re.search(r'<Business>.*</Business>',webText,re.M).group()[10:-11] # 业务员
+                #Business_Rem = re.search(r'<Business_Rem>.*</Business_Rem>',webText,re.M).group()[16:-19]  # 业务备注
+                Make_DD = re.search(r'<Make_DD>.*</Make_DD>',webText,re.M).group()[9:-10]
+                Customer = re.search(r'<Customer>.*</Customer>',webText,re.M).group()[10:-11]
+                print(SO_NO,Prd_Name,Prd_no,SPC,Qty,Business,Make_DD,Customer)
+
+            except:
+                print("请求超时")
+                return ""
 
     # def getTasklist_text(self,url,keyWord):
     #

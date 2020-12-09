@@ -17,11 +17,13 @@ if __name__ == '__main__':
     extranetlUrl = {
         'login': 'http://rdm.toptech-developer.com:81/BPM/Home/Login.aspx?ReturnUrl=/bpm/TaskList/Default.aspx',
         'taskList': 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx',
+        'nextweb':'http://rdm.toptech-developer.com:81/bpm/XMLService/DataProvider.aspx',
         'newTask': '',
     }
     intranetUrl = {
         'login': 'http://172.168.5.151:81/bpm/Home/Login.aspx',
         'taskList': 'http://172.168.5.151:81/bpm/PostRequest/Default.aspx',
+        'nextweb':'http://172.168.5.151:81/bpm/XMLService/DataProvider.aspx',
         'newTask': '',
     }
     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
@@ -47,6 +49,8 @@ if __name__ == '__main__':
 
     def displaychange(webtext,liststr):
         list = rdmWeb.getsolist(webtext,liststr)
+        pid = list[0][6]
+        so = rdmWeb.getSoinformation(extranetlUrl['nextweb'],pid)
         if list.shape[0] !=0:
             header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
             tasklistpanel.displayTablelist(list[:,:-2],header)
