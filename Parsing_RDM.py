@@ -132,6 +132,20 @@ class WebText(object):                          # 爬虫技术类
         header = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
                   'Content-Type':'text/xml; charset=UTF-8',
                   'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
+        keyWord_dic={'产品型号':'Prd_Name',
+                     '成品料号': 'Prd_no',
+                     '规格描述': 'SPC',
+                     '订单数量': 'Qty',
+                     '订单单号': 'SO_NO',
+                     '业务': 'Business',
+                     '业务备注':'Business_Rem',
+                     '商务': 'Make_DD',
+                     '制单时间':'Make_DD',
+                     '客户代码': 'Customer',
+                     '当前进度': 'StepName',
+                     'PCB是否下单':'PCB_Order',
+                     'pdf文件名':'Attachment'
+                     }
 
         xml_data = '''<?xml version='1.0'?>
                    <Param>
@@ -150,16 +164,17 @@ class WebText(object):                          # 爬虫技术类
                 resp.encoding = resp.apparent_encoding
                 webText = resp.text
                 print(webText)
-                Prd_Name = re.search(r'<Prd_Name>.*</Prd_Name>',webText,re.M).group()[10:-11]    # 成品型号
-                Prd_no = re.search(r'<Prd_no>.*</Prd_no>',webText,re.M).group()[8:-9]       # 成品料号
-                SPC = re.search(r'<SPC>.*</SPC>',webText,re.M).group()[5:-6]                # 规格描述
-                Qty = re.search(r'<Qty>.*</Qty>',webText,re.M).group()[5:-6]                # 订单数量
-                SO_NO = re.search(r'<SO_NO>.*</SO_NO>',webText,re.M).group()[7:-8]          # SO号
-                Business = re.search(r'<Business>.*</Business>',webText,re.M).group()[10:-11] # 业务员
-                #Business_Rem = re.search(r'<Business_Rem>.*</Business_Rem>',webText,re.M).group()[16:-19]  # 业务备注
-                Make_DD = re.search(r'<Make_DD>.*</Make_DD>',webText,re.M).group()[9:-10]
-                Customer = re.search(r'<Customer>.*</Customer>',webText,re.M).group()[10:-11]
-                print(SO_NO,Prd_Name,Prd_no,SPC,Qty,Business,Make_DD,Customer)
+
+                keyword = keyWord_dic.keys()
+                for key in keyword:
+                    keyvalue = keyWord_dic[key]
+                    startIndex = len(keyvalue) + 2
+                    endIndex = -(len(keyvalue)+3)
+
+                    #<变量名>.*</变量名>
+                    regex = re.compile(r'<' + keyvalue + '>.*</' + keyvalue +'>')
+                    reslutText = regex.findall(webText,re.M)
+                    print(reslutText)
 
             except:
                 print("请求超时")
@@ -296,3 +311,25 @@ class PDF():                                # 文件操作，文件（PDF）下�
 
         Res = self.gethtmltext("get", so_url, cookies, **headers)
         self.pdf_image(headers['pdfpath'])
+
+
+if __name__ == '__main__':
+    # 例一：熟悉match
+    # s = '23432werwre2342werwrew'
+    # p = r'(\d*)([a-zA-Z]*)'
+    # m = re.match(p, s)
+
+    # 例二：正则表达式包含变量
+    url = "oreilly.com"
+    regex3 = re.compile(r"^(/|.)*(%s)" % url)       # re.compile(r’表达式( % s)表达式’ % 变量)
+    regex4 = re.compile(r"^(/|.)*oreilly.com")
+    regex5 = re.compile(r"^(/|.)*" + url)           # re.compile(r’表达式’+变量 +’表达式’)
+
+    string3 = '/oreilly.com/baidu.com'
+
+    mo3 = regex3.search(string3)
+    mo4 = regex4.search(string3)
+    mo5 = regex5.search(string3)
+
+    print(mo3.group())
+    print(mo4.group())
