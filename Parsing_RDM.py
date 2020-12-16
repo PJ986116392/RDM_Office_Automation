@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote
 import os,fitz
 import numpy as np
+import xml.etree.ElementTree as ET
 
 class WebText(object):                          # 爬虫技术类
     def __init__(self,webtext,cookies):
@@ -97,8 +98,7 @@ class WebText(object):                          # 爬虫技术类
 
     def getsolist(self,demo,keyWord):
         soup = BeautifulSoup(demo, "html.parser")
-        list_row = []
-        getsolist = []
+        pid,tid,getsolist = [],[],[]
         # 进入指定tr标签
         # 注意：soup.find('tr',attrs = {'class':'TaskRow'})  实际查找的是tr标签的children
         for tr in soup.find('tr', attrs={'class': 'TaskRow'}).parent:
@@ -116,69 +116,88 @@ class WebText(object):                          # 爬虫技术类
                             getsolist.append(list_row)
 
         # 删除重复行
-        list_del = []
-        list_clu = []
+        list_del,list_clu = [],[]
         # range(len（list_so）)为行数
         for i in range(len(getsolist)):
             if i != 0 and getsolist[i][0] in list_clu:
                 list_del.append(i)  # 当行内第一个元素在列表list_clu中存在，记录需要删除的行数
             else:
                 list_clu.append(getsolist[i][0])  # 当行内第一个元素在列表list_clu中不存在，将新元素添加进list_clu
-
+        # 获取列表：['PO20191129001','生产指示单','刘博鹏由王冬琴代填','2019-11-29 09:52:23','TV电源硬件','制单人:王冬琴,客户代码：C058受订单号：SO191129001,品号:601E628H01TV13002L\n','1235553','85525']
         getso = np.delete(getsolist, list_del, axis=0)  # 统一删除重复数据行
-        return getso
+        for data in getso:
+            pid = pid.append(data[6])
+            tid = tid.append(data[7])
+
+        return getso,pid,tid
 
     def getSoinformation(self,url,pid):
-        header = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
-                  'Content-Type':'text/xml; charset=UTF-8',
-                  'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
-        keyWord_dic={'产品型号':'Prd_Name',
-                     '成品料号': 'Prd_no',
-                     '规格描述': 'SPC',
-                     '订单数量': 'Qty',
-                     '订单单号': 'SO_NO',
-                     '业务': 'Business',
-                     '业务备注':'Business_Rem',
-                     '商务': 'Make_DD',
-                     '制单时间':'Make_DD',
-                     '客户代码': 'Customer',
-                     '当前进度': 'StepName',
-                     'PCB是否下单':'PCB_Order',
-                     'pdf文件名':'Attachment'
-                     }
+        if len(pid) > 0:
+            header = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
+                      'Content-Type':'text/xml; charset=UTF-8',
+                      'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
+            xml_data = '''<?xml version='1.0'?>
+                       <Param>
+                            <Method>GetFormProcessData</Method>
+                            <PID>1235062</PID>
+                       </Param>
+                       '''
+            if re.search(r'\d{5,7}',xml_data):
+                xml_data = re.sub(r'\d{5,7}',pid,xml_data)
+                xml_data = xml_data.encode('utf-8')
 
-        xml_data = '''<?xml version='1.0'?>
-                   <Param>
-                        <Method>GetFormProcessData</Method>
-                        <PID>1235062</PID>
-                   </Param>
-                   '''
-        if re.search(r'\d{5,7}',xml_data):
-            xml_data = re.sub(r'\d{5,7}',pid,xml_data)
-            xml_data = xml_data.encode('utf-8')
+                try:
+                    resp = requests.post(url, headers=header, cookies=self.cookies, timeout=30, data=xml_data)
+                    # 如果状态不是200，引发HTTPError异常
+                    resp.raise_for_status()
+                    resp.encoding = resp.apparent_encoding
+                    # webText 数据为xml格式
+                    # xml 数据格式化url：https://tool.ip138.com/xml/
+                    webText = resp.text
 
-            try:
-                resp = requests.post(url, headers=header, cookies=self.cookies, timeout=30, data=xml_data)
-                # 如果状态不是200，引发HTTPError异常
-                resp.raise_for_status()
-                resp.encoding = resp.apparent_encoding
-                webText = resp.text
-                print(webText)
+                    # 方案一：正则表达式处理xml数据
+                    # keyword = keyWord_dic.keys()
+                    # for key in keyword:
+                    #     keyvalue = keyWord_dic[key]
+                    #     startIndex = len(keyvalue) + 2
+                    #     endIndex = -(len(keyvalue)+3)
+                    #
+                    #     #<变量名>.*</变量名>
+                    #     regex = re.compile(r'<' + keyvalue + '>.*</' + keyvalue +'>')
+                    #     # findall后数据格式
+                    #     # ['<Qty>362.0000</Qty>', '<Qty>361.0000</Qty>', '<Qty>362.0000</Qty>', '<Qty>1.0000</Qty>']
+                    #     if regex.search(webText,re.M):
+                    #         reslut = regex.findall(webText,re.M)
+                    #         for data,index in enumerate(reslut):
+                    #             reslut[index] = data[startIndex:endIndex]
+                    #         print(reslut)
 
-                keyword = keyWord_dic.keys()
-                for key in keyword:
-                    keyvalue = keyWord_dic[key]
-                    startIndex = len(keyvalue) + 2
-                    endIndex = -(len(keyvalue)+3)
 
-                    #<变量名>.*</变量名>
-                    regex = re.compile(r'<' + keyvalue + '>.*</' + keyvalue +'>')
-                    reslutText = regex.findall(webText,re.M)
-                    print(reslutText)
+                    # 方案二：xml.etree.ElementTree 模块处理xml数据
+                    # https://www.cnblogs.com/xiaobingqianrui/p/8405813.html
+                    xmlFilePath = os.path.abspath("test.xml")
+                    try:
+                        tree = ET.parse(xmlFilePath)
+                        # 获得根节点
+                        root = tree.getroot()
+                        # captionList = root.iterfind()
+                        #("Production_Order_M")
+                        # for caption in captionList:
+                        #     if caption.tag == "Data":
+                        #         for data in :
+                        #             if data =="Customer"
+                        #                 print(data.arr)
+                        #             elif data == ""
+                        #                 pass
+                    except Exception as e:  # 捕获除与程序退出sys.exit()相关之外的所有异常
+                        print("parse test.xml fail!")
 
-            except:
-                print("请求超时")
-                return ""
+                except:
+                    print("请求超时")
+                    return ""
+        else:
+            print("pid为空")
+
 
     # def getTasklist_text(self,url,keyWord):
     #
@@ -320,16 +339,64 @@ if __name__ == '__main__':
     # m = re.match(p, s)
 
     # 例二：正则表达式包含变量
-    url = "oreilly.com"
-    regex3 = re.compile(r"^(/|.)*(%s)" % url)       # re.compile(r’表达式( % s)表达式’ % 变量)
-    regex4 = re.compile(r"^(/|.)*oreilly.com")
-    regex5 = re.compile(r"^(/|.)*" + url)           # re.compile(r’表达式’+变量 +’表达式’)
+    # url = "oreilly.com"
+    # regex3 = re.compile(r"^(/|.)*(%s)" % url)       # re.compile(r’表达式( % s)表达式’ % 变量)
+    # regex4 = re.compile(r"^(/|.)*oreilly.com")
+    # regex5 = re.compile(r"^(/|.)*" + url)           # re.compile(r’表达式’+变量 +’表达式’)
+    #
+    # string3 = '/oreilly.com/baidu.com'
+    #
+    # mo3 = regex3.search(string3)
+    # mo4 = regex4.search(string3)
+    # mo5 = regex5.search(string3)
+    #
+    # print(mo3.group())
+    # print(mo4.group())
+    xmlFilePath = os.path.abspath("xml.xml")
+    try:
+        tree = ET.parse(xmlFilePath)
+        # 获得根节点
+        root = tree.getroot()
+        captionList = root.getchildren()
+        for caption in captionList:
+            if caption.tag == 'Global':
+                stepName = caption.iter('StepName')
+                for step in stepName:
+                    if step.text == "TV硬件项目经理":
+                        print("当前进度为TV硬件项目经理")
 
-    string3 = '/oreilly.com/baidu.com'
+            elif caption.tag == "Production_Order_M":
+                captionData = caption.find('Data')
+                captionRow = captionData.find('Row')
+                # print(type(captionRow))
+                for value in captionRow.getchildren():
+                    # print(value.tag)
+                    if value.tag == 'Customer':             # 客户代码
+                        print(value.tag,value.text)
+                    elif value.tag == 'Attachment':         # 附件名称
+                        print(value.tag,value.text)
+                    elif value.tag == 'SO_NO':              # 订单so号
+                        print(value.tag,value.text)
+                    elif value.tag == 'Business_Rem':       # 业务备注
+                        print(value.tag,value.text)
+                    elif value.tag == 'Make_DD':            # 制单日期
+                        print(value.tag,value.text)
+                    elif value.tag == 'Make_Man':           # 商务
+                        print(value.tag,value.text)
+                    elif value.tag == 'Business':           # 业务员
+                        print(value.tag,value.text)
 
-    mo3 = regex3.search(string3)
-    mo4 = regex4.search(string3)
-    mo5 = regex5.search(string3)
+            elif caption.tag == 'Production_Order_S':
+                captionData = caption.find('Data')
+                captionRow = captionData.find('Row')
+                for row in captionRow.getchildren():
+                    if row.tag == 'Prd_no':
+                        if len(row.text) == 18 :        # bom成品料号
 
-    print(mo3.group())
-    print(mo4.group())
+
+
+
+
+
+    except Exception as e:  # 捕获除与程序退出sys.exit()相关之外的所有异常
+        print("parse test.xml fail!")
