@@ -154,7 +154,7 @@ class WebText(object):                          # 爬虫技术类
                     # webText 数据为xml格式
                     # xml 数据格式化url：https://tool.ip138.com/xml/
                     webText = resp.text
-
+                    self.xmlParse(webText)
                     # 方案一：正则表达式处理xml数据
                     # keyword = keyWord_dic.keys()
                     # for key in keyword:
@@ -175,22 +175,7 @@ class WebText(object):                          # 爬虫技术类
 
                     # 方案二：xml.etree.ElementTree 模块处理xml数据
                     # https://www.cnblogs.com/xiaobingqianrui/p/8405813.html
-                    xmlFilePath = os.path.abspath("test.xml")
-                    try:
-                        tree = ET.parse(xmlFilePath)
-                        # 获得根节点
-                        root = tree.getroot()
-                        # captionList = root.iterfind()
-                        #("Production_Order_M")
-                        # for caption in captionList:
-                        #     if caption.tag == "Data":
-                        #         for data in :
-                        #             if data =="Customer"
-                        #                 print(data.arr)
-                        #             elif data == ""
-                        #                 pass
-                    except Exception as e:  # 捕获除与程序退出sys.exit()相关之外的所有异常
-                        print("parse test.xml fail!")
+
 
                 except:
                     print("请求超时")
@@ -198,6 +183,57 @@ class WebText(object):                          # 爬虫技术类
         else:
             print("pid为空")
 
+    def xmlParse(self,webtext):
+        try:
+            tree = ET.fromstring(webtext)
+            captionList = tree.getchildren()
+            for caption in captionList:
+                # 获取电子流当前进度
+                if caption.tag == 'Global':
+                    stepName = caption.iter('StepName')
+                    for step in stepName:
+                        if step.text == "TV硬件项目经理":
+                            print("当前进度为TV硬件项目经理")
+                # 获取电子流商务信息
+                elif caption.tag == "Production_Order_M":
+                    captionData = caption.find('Data')
+                    captionRow = captionData.find('Row')
+                    # print(type(captionRow))
+                    for value in captionRow.getchildren():
+                        # print(value.tag)
+                        if value.tag == 'Customer':  # 客户代码
+                            print(value.tag, value.text)
+                        elif value.tag == 'Attachment':  # 附件名称
+                            print(value.tag, value.text)
+                        elif value.tag == 'SO_NO':  # 订单so号
+                            print(value.tag, value.text)
+                        elif value.tag == 'Business_Rem':  # 业务备注
+                            print(value.tag, value.text)
+                        elif value.tag == 'Make_DD':  # 制单日期
+                            print(value.tag, value.text)
+                        elif value.tag == 'Make_Man':  # 商务
+                            print(value.tag, value.text)
+                        elif value.tag == 'Business':  # 业务员
+                            print(value.tag, value.text)
+                # 获取电子订单信息
+                elif caption.tag == 'Production_Order_S':
+                    print(20 * '*')
+                    captionData = caption.find('Data')
+                    captionRow = captionData.findall('Row')
+                    for row in captionRow:
+                        if len(row.find('Prd_no').text) == 18:
+                            for value in row:
+                                if value.tag == 'Prd_no':
+                                    print(value.tag, value.text)
+                                elif value.tag == 'Prd_Name':
+                                    print(value.tag, value.text)
+                                elif value.tag == 'Qty':
+                                    print(value.tag, value.text)
+                                elif value.tag == 'SPC':
+                                    print(value.tag, value.text)
+
+        except Exception as e:  # 捕获除与程序退出sys.exit()相关之外的所有异常
+            print("parse test.xml fail!")
 
     # def getTasklist_text(self,url,keyWord):
     #
@@ -359,12 +395,13 @@ if __name__ == '__main__':
         root = tree.getroot()
         captionList = root.getchildren()
         for caption in captionList:
+            # 获取电子流当前进度
             if caption.tag == 'Global':
                 stepName = caption.iter('StepName')
                 for step in stepName:
                     if step.text == "TV硬件项目经理":
                         print("当前进度为TV硬件项目经理")
-
+            # 获取电子流商务信息
             elif caption.tag == "Production_Order_M":
                 captionData = caption.find('Data')
                 captionRow = captionData.find('Row')
@@ -385,18 +422,22 @@ if __name__ == '__main__':
                         print(value.tag,value.text)
                     elif value.tag == 'Business':           # 业务员
                         print(value.tag,value.text)
-
+            # 获取电子订单信息
             elif caption.tag == 'Production_Order_S':
+                print(20 * '*')
                 captionData = caption.find('Data')
-                captionRow = captionData.find('Row')
-                for row in captionRow.getchildren():
-                    if row.tag == 'Prd_no':
-                        if len(row.text) == 18 :        # bom成品料号
-
-
-
-
-
+                captionRow = captionData.findall('Row')
+                for row in captionRow:
+                    if len(row.find('Prd_no').text) == 18:
+                        for value in row:
+                            if value.tag == 'Prd_no':
+                                print(value.tag,value.text)
+                            elif value.tag == 'Prd_Name':
+                                print(value.tag, value.text)
+                            elif value.tag == 'Qty':
+                                print(value.tag, value.text)
+                            elif value.tag == 'SPC':
+                                print(value.tag, value.text)
 
     except Exception as e:  # 捕获除与程序退出sys.exit()相关之外的所有异常
         print("parse test.xml fail!")

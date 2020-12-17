@@ -49,6 +49,7 @@ if __name__ == '__main__':
 
     def displaychange(webtext,liststr):
         list,pid,tid = rdmWeb.getsolist(webtext,liststr)
+        pid = '1235062'
         so = rdmWeb.getSoinformation(extranetlUrl['nextweb'],pid)
         if list.shape[0] !=0:
             header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
