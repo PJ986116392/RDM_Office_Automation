@@ -132,68 +132,58 @@ class WebText(object):                          # 爬虫技术类
         return getso,pid,tid
 
     def getSoinformation(self,url,pid):
-        if len(pid) > 0:
-            header = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
-                      'Content-Type':'text/xml; charset=UTF-8',
-                      'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
-            xml_data = '''<?xml version='1.0'?>
-                       <Param>
-                            <Method>GetFormProcessData</Method>
-                            <PID>1235062</PID>
-                       </Param>
-                       '''
-            if re.search(r'\d{5,7}',xml_data):
-                xml_data = re.sub(r'\d{5,7}',pid,xml_data)
-                xml_data = xml_data.encode('utf-8')
-
-                try:
-                    resp = requests.post(url, headers=header, cookies=self.cookies, timeout=30, data=xml_data)
-                    # 如果状态不是200，引发HTTPError异常
-                    resp.raise_for_status()
-                    resp.encoding = resp.apparent_encoding
-                    # webText 数据为xml格式
-                    # xml 数据格式化url：https://tool.ip138.com/xml/
-                    webText = resp.text
-                    self.xmlParse(webText)
-                    # 方案一：正则表达式处理xml数据
-                    # keyword = keyWord_dic.keys()
-                    # for key in keyword:
-                    #     keyvalue = keyWord_dic[key]
-                    #     startIndex = len(keyvalue) + 2
-                    #     endIndex = -(len(keyvalue)+3)
-                    #
-                    #     #<变量名>.*</变量名>
-                    #     regex = re.compile(r'<' + keyvalue + '>.*</' + keyvalue +'>')
-                    #     # findall后数据格式
-                    #     # ['<Qty>362.0000</Qty>', '<Qty>361.0000</Qty>', '<Qty>362.0000</Qty>', '<Qty>1.0000</Qty>']
-                    #     if regex.search(webText,re.M):
-                    #         reslut = regex.findall(webText,re.M)
-                    #         for data,index in enumerate(reslut):
-                    #             reslut[index] = data[startIndex:endIndex]
-                    #         print(reslut)
-
-
-                    # 方案二：xml.etree.ElementTree 模块处理xml数据
-                    # https://www.cnblogs.com/xiaobingqianrui/p/8405813.html
-
-
-                except:
-                    print("请求超时")
-                    return ""
+        # isinstance(变量,数据类型)
+        # 数据类型可以是：int,str,dict
+        soinformation = []
+        if isinstance(pid,list) and len(pid) > 0:
+            for id in pid:
+                header = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
+                          'Content-Type': 'text/xml; charset=UTF-8',
+                          'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
+                xml_data = '''<?xml version='1.0'?>
+                           <Param>
+                                <Method>GetFormProcessData</Method>
+                                <PID>1235062</PID>
+                           </Param>
+                           '''
+                if re.search(r'\d{5,7}', xml_data):
+                    xml_data = re.sub(r'\d{5,7}', id, xml_data)
+                    xml_data = xml_data.encode('utf-8')
+                    try:
+                        resp = requests.post(url, headers=header, cookies=self.cookies, timeout=30, data=xml_data)
+                        # 如果状态不是200，引发HTTPError异常
+                        resp.raise_for_status()
+                        resp.encoding = resp.apparent_encoding
+                        # webText 数据为xml格式
+                        # xml 数据格式化url：https://tool.ip138.com/xml/
+                        webText = resp.text
+                        soinformationRow = self.xmlParse(webText)
+                    except:
+                        print("请求超时")
+                        soinformationRow = []
+                    soinformation.append(soinformationRow)
+            # print(soinformation)
+            return soinformation
         else:
             print("pid为空")
+            return []
 
     def xmlParse(self,webtext):
+        soinformation = ['Customer','Attachment','SO_NO','Business_Rem','Make_DD','Make_Man','Business','Prd_no','Prd_Name','SPC','StepName']
+        data = []
         try:
             tree = ET.fromstring(webtext)
             captionList = tree.getchildren()
             for caption in captionList:
+                dataRow = []
+                soNum = 0.0
                 # 获取电子流当前进度
                 if caption.tag == 'Global':
                     stepName = caption.iter('StepName')
                     for step in stepName:
                         if step.text == "TV硬件项目经理":
-                            print("当前进度为TV硬件项目经理")
+                            # print("当前进度为TV硬件项目经理")
+                            dataRow.append(step.text)
                 # 获取电子流商务信息
                 elif caption.tag == "Production_Order_M":
                     captionData = caption.find('Data')
@@ -201,39 +191,29 @@ class WebText(object):                          # 爬虫技术类
                     # print(type(captionRow))
                     for value in captionRow.getchildren():
                         # print(value.tag)
-                        if value.tag == 'Customer':  # 客户代码
-                            print(value.tag, value.text)
-                        elif value.tag == 'Attachment':  # 附件名称
-                            print(value.tag, value.text)
-                        elif value.tag == 'SO_NO':  # 订单so号
-                            print(value.tag, value.text)
-                        elif value.tag == 'Business_Rem':  # 业务备注
-                            print(value.tag, value.text)
-                        elif value.tag == 'Make_DD':  # 制单日期
-                            print(value.tag, value.text)
-                        elif value.tag == 'Make_Man':  # 商务
-                            print(value.tag, value.text)
-                        elif value.tag == 'Business':  # 业务员
-                            print(value.tag, value.text)
+                        if value.tag in soinformation:
+                            # print(value.tag, value.text)
+                            dataRow.append(value.text)
                 # 获取电子订单信息
                 elif caption.tag == 'Production_Order_S':
-                    print(20 * '*')
+                    #print(20 * '*')
                     captionData = caption.find('Data')
                     captionRow = captionData.findall('Row')
                     for row in captionRow:
-                        if len(row.find('Prd_no').text) == 18:
+                        if len(row.find('Prd_no').text) == 18:              # 为成品料号
+                            # 如果一个电子流有多个相同成品料号，规格，订单数量
+                            soNum = soNum + float(row.find('Qty').text)     # 统计订单数量
                             for value in row:
-                                if value.tag == 'Prd_no':
-                                    print(value.tag, value.text)
-                                elif value.tag == 'Prd_Name':
-                                    print(value.tag, value.text)
-                                elif value.tag == 'Qty':
-                                    print(value.tag, value.text)
-                                elif value.tag == 'SPC':
-                                    print(value.tag, value.text)
+                                if value.tag in soinformation and value.text not in dataRow:
+                                    #print(value.tag, value.text)
+                                    dataRow.append(value.text)
+                    dataRow.append(soNum)
+                data.extend(dataRow)
+            # print(data)
+            return data
 
         except Exception as e:  # 捕获除与程序退出sys.exit()相关之外的所有异常
-            print("parse test.xml fail!")
+            print("解析xml数据异常")
 
     # def getTasklist_text(self,url,keyWord):
     #

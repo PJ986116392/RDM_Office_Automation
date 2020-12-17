@@ -91,6 +91,13 @@ class dataAnalysis(object):
         pd_data = sourcedata.append(pd_data)
         pd_data.to_excel(filePtah,sheet_name="WaringInformation",index=False)
 
+    def solist_to_excel(self,list):
+        Col = ['客户代码','附件名称','SO号','业务备注','制单时间','制单人员','业务员','成品名称','成品料号','成品规格','订单数量','当前步骤']
+        data = pd.DataFrame(np.array(list),columns=Col)
+        Date = pd.to_datetime(data['制单时间'])
+        # 按照制单时间进行分类保存
+        # 年
+        # 月
 if __name__ == '__main__':
     print('通过字典创建DataFrame:')
     df_1 = pd.DataFrame({'A': 1.0,
