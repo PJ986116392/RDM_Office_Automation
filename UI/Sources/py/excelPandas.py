@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os,re
+from datetime import datetime
 
 class dataAnalysis(object):
     def __init__(self,projectName,projectNum,projectSpec):
@@ -92,9 +93,48 @@ class dataAnalysis(object):
         pd_data.to_excel(filePtah,sheet_name="WaringInformation",index=False)
 
     def solist_to_excel(self,list):
+        # 获取当前文件夹内年份excel文件名信息
+        dirPath = self.io + '\\' + 'so_Information'
+        if not os.path.exists(dirPath):  # 如果保存文件夹不存在就创建文件夹
+            os.makedirs(dirPath)
+        fileList = []
+        files = os.listdir(dirPath)  # 得到文件夹下的所有文件名称
+        for file in files:
+            index = file.rfind('.')
+            file = file[:index]
+            fileList.append(file)
+
+        # 获取当前订单年月
         Col = ['客户代码','附件名称','SO号','业务备注','制单时间','制单人员','业务员','成品名称','成品料号','成品规格','订单数量','当前步骤']
         data = pd.DataFrame(np.array(list),columns=Col)
-        Date = pd.to_datetime(data['制单时间'])
+        data['制单时间'] = pd.to_datetime(data['制单时间'])
+
+        # 将数据按照年，月分类
+        Year_moth = []
+        for index,Date in enumerate(data['制单时间']):
+            if Date.strftime("%Y-%m") not in Year_moth:
+                Year_moth.append(Date.strftime("%Y-%m"))
+            data.loc[index,'年月']=Date.strftime("%Y-%m")
+        for Date in data['制单时间']:
+            saveData = data[data['制单时间'] == Date]
+            Year = Date.strftime("%Y")
+            Moth = Date.strftime("%m")
+            fileName = dirPath + '\\' + Year + '.xls'
+            if Year not in fileList:            # 年份excel文件不存在
+                pd.DataFrame(saveData).to_excel(fileName,sheet_name = Moth,index=False)
+            else:
+                file = pd.ExcelFile(fileName)
+                if Moth not in file.sheet_names:    # 年份excel在，但是Moth不在
+                    pd.DataFrame(saveData).to_excel(fileName, sheet_name=Moth,index=False)
+                else:                               # 对应年份，月份 存在
+                    openData = pd.read_excel(fileName,Moth)
+                    # 当前需要保存的数据中是否有重复so
+                    for so in saveData['SO号']:
+                        if so in openData['SO号'].values:                               # 当前保存的so在已有excel中
+                            saveData = saveData[saveData['SO号'] != so]
+                    if not saveData.empty:
+                        openData = openData.append(saveData,ignore_index=True)       # ignore_index=True,表示不按原来的索引，从0开始自动递增
+                        pd.DataFrame(openData).to_excel(fileName, sheet_name=Moth,index=False)
         # 按照制单时间进行分类保存
         # 年
         # 月

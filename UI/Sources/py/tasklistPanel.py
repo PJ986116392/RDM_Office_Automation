@@ -100,8 +100,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
     def listChoose_comb_change(self):
         if self.taskList_btn.isChecked():
             if self.taskInformation_btn.isChecked() and not self.waring_btn.isChecked():  # 查看电子流信息
-                text = self.listChoose_comb.currentText()
-                self.listChoose_comb_change_signal.emit(self.webtext,text)
+                self.listChoose_comb_change_signal.emit(self.webtext,self.listChoose_comb.currentText())
 
     def newForm_btn_click(self,checked):
 

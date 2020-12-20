@@ -126,8 +126,8 @@ class WebText(object):                          # 爬虫技术类
         # 获取列表：['PO20191129001','生产指示单','刘博鹏由王冬琴代填','2019-11-29 09:52:23','TV电源硬件','制单人:王冬琴,客户代码：C058受订单号：SO191129001,品号:601E628H01TV13002L\n','1235553','85525']
         getso = np.delete(getsolist, list_del, axis=0)  # 统一删除重复数据行
         for data in getso:
-            pid = pid.append(data[6])
-            tid = tid.append(data[7])
+            pid.append(data[6])
+            tid.append(data[7])
 
         return getso,pid,tid
 
@@ -156,8 +156,7 @@ class WebText(object):                          # 爬虫技术类
                         resp.encoding = resp.apparent_encoding
                         # webText 数据为xml格式
                         # xml 数据格式化url：https://tool.ip138.com/xml/
-                        webText = resp.text
-                        soinformationRow = self.xmlParse(webText)
+                        soinformationRow = self.xmlParse(resp.text)
                     except:
                         print("请求超时")
                         soinformationRow = []
@@ -181,8 +180,7 @@ class WebText(object):                          # 爬虫技术类
                 if caption.tag == 'Global':
                     stepName = caption.iter('StepName')
                     for step in stepName:
-                        if step.text == "TV硬件项目经理":
-                            # print("当前进度为TV硬件项目经理")
+                        if step.text != None:
                             dataRow.append(step.text)
                 # 获取电子流商务信息
                 elif caption.tag == "Production_Order_M":

@@ -47,11 +47,13 @@ if __name__ == '__main__':
         else:
             print("用户名或密码错误！")
 
-    def displaychange(webtext,liststr):
-        list,pid,tid = rdmWeb.getsolist(webtext,liststr)
-        pid = ['1703361','1235062']
-        soList = rdmWeb.getSoinformation(extranetlUrl['nextweb'],pid)
-        data.solist_to_excel(soList)
+    def displaychange(webtext,listChoose_comb_Text):
+        list,pid,tid = rdmWeb.getsolist(webtext,listChoose_comb_Text)
+        # 生产指示单需要保存订单详细信息
+        if listChoose_comb_Text == "生产指示单":
+            soList = rdmWeb.getSoinformation(extranetlUrl['nextweb'],pid)
+            if len(soList)>0:
+                data.solist_to_excel(soList)
         if list.shape[0] !=0:
             header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
             tasklistpanel.displayTablelist(list[:,:-2],header)
