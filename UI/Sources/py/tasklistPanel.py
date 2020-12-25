@@ -349,3 +349,5 @@ class TaskList(QWidget,Ui_TaskListWindow):
 
     def refreshWebtext(self):
         self.refreshWebtext_signal.emit()
+
+

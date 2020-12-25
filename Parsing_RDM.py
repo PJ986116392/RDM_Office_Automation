@@ -125,10 +125,10 @@ class WebText(object):                          # 爬虫技术类
                 list_clu.append(getsolist[i][0])  # 当行内第一个元素在列表list_clu中不存在，将新元素添加进list_clu
         # 获取列表：['PO20191129001','生产指示单','刘博鹏由王冬琴代填','2019-11-29 09:52:23','TV电源硬件','制单人:王冬琴,客户代码：C058受订单号：SO191129001,品号:601E628H01TV13002L\n','1235553','85525']
         getso = np.delete(getsolist, list_del, axis=0)  # 统一删除重复数据行
+        # 获取tid，pid
         for data in getso:
             pid.append(data[6])
             tid.append(data[7])
-
         return getso,pid,tid
 
     def getSoinformation(self,url,pid):
@@ -160,6 +160,7 @@ class WebText(object):                          # 爬虫技术类
                     except:
                         print("请求超时")
                         soinformationRow = []
+                    soinformationRow.append(id)
                     soinformation.append(soinformationRow)
             # print(soinformation)
             return soinformation

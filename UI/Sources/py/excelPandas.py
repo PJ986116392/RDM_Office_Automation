@@ -3,7 +3,7 @@ import numpy as np
 import os,re
 from datetime import datetime
 
-class dataAnalysis(object):
+class excel_pandas(object):
     def __init__(self,projectName,projectNum,projectSpec):
         self.projectName = projectName
         self.projectNum = projectNum
@@ -103,9 +103,8 @@ class dataAnalysis(object):
             index = file.rfind('.')
             file = file[:index]
             fileList.append(file)
-
         # 获取当前订单年月
-        Col = ['客户代码','附件名称','SO号','业务备注','制单时间','制单人员','业务员','成品名称','成品料号','成品规格','订单数量','当前步骤']
+        Col = ['客户代码','附件名称','SO号','业务备注','制单时间','制单人员','业务员','成品名称','成品料号','成品规格','订单数量','当前步骤','PID']
         data = pd.DataFrame(np.array(list),columns=Col)
         data['制单时间'] = pd.to_datetime(data['制单时间'])
 
@@ -135,9 +134,7 @@ class dataAnalysis(object):
                     if not saveData.empty:
                         openData = openData.append(saveData,ignore_index=True)       # ignore_index=True,表示不按原来的索引，从0开始自动递增
                         pd.DataFrame(openData).to_excel(fileName, sheet_name=Moth,index=False)
-        # 按照制单时间进行分类保存
-        # 年
-        # 月
+
 if __name__ == '__main__':
     print('通过字典创建DataFrame:')
     df_1 = pd.DataFrame({'A': 1.0,

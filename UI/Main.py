@@ -1,6 +1,6 @@
 from UI.Sources.py.loginPanel import LoginPanel
 from UI.Sources.py.tasklistPanel import TaskList
-from UI.Sources.py.excelPandas import dataAnalysis
+from UI.Sources.py.excelPandas import excel_pandas
 from UI.Sources.py.addwarinformationPanel import Addwarinf
 from PyQt5.Qt import *
 from Parsing_RDM import WebText
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     }
     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
-    data = dataAnalysis("", "", "")
+    excel = excel_pandas("", "", "")
 
     # 槽函数
     def login(account,pwd):
@@ -48,15 +48,17 @@ if __name__ == '__main__':
             print("用户名或密码错误！")
 
     def displaychange(webtext,listChoose_comb_Text):
-        list,pid,tid = rdmWeb.getsolist(webtext,listChoose_comb_Text)
+
+        solist,pid,tid = rdmWeb.getsolist(webtext,listChoose_comb_Text)
+        # pid = ['1235062','1717379','1718369','1718358','1718337']
         # 生产指示单需要保存订单详细信息
         if listChoose_comb_Text == "生产指示单":
             soList = rdmWeb.getSoinformation(extranetlUrl['nextweb'],pid)
             if len(soList)>0:
-                data.solist_to_excel(soList)
+                excel.solist_to_excel(soList)
         if list.shape[0] !=0:
             header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
-            tasklistpanel.displayTablelist(list[:,:-2],header)
+            tasklistpanel.displayTablelist(solist[:,:-2],header)
         else:
             tasklistpanel.displayTablelist([], [])
 
@@ -67,7 +69,7 @@ if __name__ == '__main__':
         tasklistpanel.listChoose_comb_change()
 
     def searchProjectNum(projectName,projectNum,projectSpec,fileName):
-        dataFilter,datafiltCol =data.Screen(projectName,projectNum,projectSpec,fileName)
+        dataFilter,datafiltCol =excel.Screen(projectName,projectNum,projectSpec,fileName)
         if fileName =="WaringInformation":
             if dataFilter.shape[0] != 0:
                 tasklistpanel.add_btn.setEnabled(False)
@@ -96,7 +98,7 @@ if __name__ == '__main__':
                 addwarinf.displayTablelist([],[])
 
     def diswaringInformation():
-        Data = data.getSourcedata('WaringInformation')
+        Data = excel.getSourcedata('WaringInformation')
         tasklistpanel.displayTablelist(Data.values,Data.columns.values)
 
     def addWarinformation(projectName,projectNum,projectSpec):
@@ -107,12 +109,12 @@ if __name__ == '__main__':
         addwarinf.search_btn.click()
 
     def delNumList(delList):
-        sourcedata = data.getSourcedata('WaringInformation')
-        result = data.deldata(sourcedata,delList)
+        sourcedata = excel.getSourcedata('WaringInformation')
+        result =excel.deldata(sourcedata,delList)
 
     def addData(addData):
         # 处理pandas数据
-        data.add_data(addData)
+        excel.add_data(addData)
         # 显示
         diswaringInformation()
 
