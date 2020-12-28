@@ -2,6 +2,7 @@ from UI.Sources.ui.taskList_UI import Ui_TaskListWindow
 from PyQt5.Qt import *
 from PyQt5 import QtWidgets,QtCore
 from PyQt5.QtWebEngineWidgets import *
+import re
 
 class TaskList(QWidget,Ui_TaskListWindow):
 
@@ -11,6 +12,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
     waring_btn_click_signal = pyqtSignal()
     add_btn_click_signal = pyqtSignal(str, str, str)
     del_btn_click_signal = pyqtSignal(list)
+    display_tab_right_click_signal = pyqtSignal(int,str)
 
     def __init__(self,webtext,displayList,cookies):
         # 基本参数初始化
@@ -18,6 +20,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.webtext = webtext
         self.displayList = displayList
         self.cookies = cookies
+        self.previousRow = -1
         self.setupUi(self)
         #self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)  # 去掉标题栏
         # 窗口控件状态初始化
@@ -46,6 +49,7 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.Web_wid.setHidden(True)
         # 子控件添加事件处理，必须语句
         self.Top_wid.installEventFilter(self)
+        self.display_tab.installEventFilter(self)
 
     def eventFilter(self, objwatched, event):                   # 设置事件过滤函数
         eventType = event.type()
@@ -68,6 +72,18 @@ class TaskList(QWidget,Ui_TaskListWindow):
                     self.move(event.globalPos() - self.dragPosition)
                     event.accept()
                 except:pass
+        elif objwatched == self.display_tab:
+            if eventType == QEvent.ContextMenu:      # 鼠标右键选中
+                # 获取当前选中行中的so
+                selectIndex = self.display_tab.selectionModel().selectedIndexes()
+                # QmodelIndex数据转成int，换得到相应的row
+                for index in selectIndex:
+                    if index.column() == 5:
+                        if re.search(r'SO\d{9}', index.data()):
+                            so_no = re.search(r'SO\d{9}', index.data()).group()
+                            appendRow = index.row()
+                            self.display_tab_right_click_signal.emit(appendRow,so_no)
+
         return super().eventFilter(objwatched, event)
 
     def setTopexpand(self,x,y):                      # 动画函数
@@ -263,7 +279,6 @@ class TaskList(QWidget,Ui_TaskListWindow):
                 btn.setChecked(False)
 
     def displayTablelist(self,displayList,head):
-
         if len(displayList) != 0:
             rows = displayList.shape[0]              # 行计算
             colums = displayList.shape[1]            # 列计算
@@ -279,14 +294,6 @@ class TaskList(QWidget,Ui_TaskListWindow):
             self.display_tab.model = QStandardItemModel(rows, colums)
             # 设置水平方向四个头标签文本内容
             self.display_tab.model.setHorizontalHeaderLabels(head)
-
-            # Todo 优化2 添加数据
-            # self.model.appendRow([
-            #     QStandardItem('row %s,column %s' % (11,11)),
-            #     QStandardItem('row %s,column %s' % (11,11)),
-            #     QStandardItem('row %s,column %s' % (11,11)),
-            #     QStandardItem('row %s,column %s' % (11,11)),
-            # ])
 
             for row in range(rows):
                 for column in range(colums):
@@ -321,6 +328,59 @@ class TaskList(QWidget,Ui_TaskListWindow):
         else:
             self.display_tab.model = QStandardItemModel(0, 0)
             self.display_tab.setModel(self.display_tab.model)
+
+    def insert_display(self,appendRow,insertData,waringStr):
+        # 一、添加信息
+        self.display_tab.setShowGrid(True)
+        # 第一次查看订单信息
+        if self.previousRow == -1:
+            self.insertData(appendRow,insertData)
+            self.previousRow = appendRow+1
+        elif appendRow != self.previousRow:
+            # 从上往下点击
+            if appendRow > self.previousRow:
+                # 先加后删除
+                self.insertData(appendRow,insertData)
+                self.display_tab.model.removeRow(self.previousRow)
+                self.previousRow = appendRow
+            # 从下往上点击
+            else:
+                # 先删除后增加
+                self.display_tab.model.removeRow(self.previousRow)
+                self.insertData(appendRow, insertData)
+                self.previousRow = appendRow + 1
+
+        # 二、显示警告信息
+        if len(waringStr)>0:
+            self.waring_labe.setText(waringStr)
+        else:
+            self.waring_labe.setText("")
+
+    def insertData(self,appendRow,insertData):
+        appendRow = appendRow + 1
+        self.display_tab.model.insertRow(appendRow)
+        # 合并单元格
+        # 起始行，列，合并的行数，全并的列数，合并的内容为起始行列的内容
+        self.display_tab.setSpan(appendRow, 1, 1, 2)
+        self.display_tab.setSpan(appendRow, 3, 1, 3)
+
+        # 手动调整列宽
+        self.display_tab.setColumnWidth(0,180)
+        self.display_tab.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        self.display_tab.setRowHeight(appendRow,180)
+
+        # 修改数据
+        for i in range(3):
+            item = QStandardItem(insertData[i])
+            # 设置不能选中避免崩溃
+            item.setFlags(Qt.ItemIsSelectable)
+            if i == 0 :
+                self.display_tab.model.setItem(appendRow, 0, item)
+            elif i == 1:
+                self.display_tab.model.setItem(appendRow, 1, item)
+            else:
+                self.display_tab.model.setItem(appendRow, 3, item)
+
 
     def inverse_rad_checked(self):
         # 获取当前选中的行 QmodelIndex

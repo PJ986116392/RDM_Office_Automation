@@ -1,6 +1,6 @@
 from UI.Sources.py.loginPanel import LoginPanel
 from UI.Sources.py.tasklistPanel import TaskList
-from UI.Sources.py.excelPandas import excel_pandas
+from UI.Sources.py.excelPandas import dataAnalysis
 from UI.Sources.py.addwarinformationPanel import Addwarinf
 from PyQt5.Qt import *
 from Parsing_RDM import WebText
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     }
     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
                'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
-    excel = excel_pandas("", "", "")
+    data = dataAnalysis("", "", "")
 
     # 槽函数
     def login(account,pwd):
@@ -48,17 +48,17 @@ if __name__ == '__main__':
             print("用户名或密码错误！")
 
     def displaychange(webtext,listChoose_comb_Text):
-
-        solist,pid,tid = rdmWeb.getsolist(webtext,listChoose_comb_Text)
-        # pid = ['1235062','1717379','1718369','1718358','1718337']
+        list,pid,tid = rdmWeb.getsolist(webtext,listChoose_comb_Text)
         # 生产指示单需要保存订单详细信息
         if listChoose_comb_Text == "生产指示单":
             soList = rdmWeb.getSoinformation(extranetlUrl['nextweb'],pid)
+            # 保存记录订单信息
             if len(soList)>0:
-                excel.solist_to_excel(soList)
+                data.solist_to_excel(soList)
+            # 显示信息
         if list.shape[0] !=0:
             header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
-            tasklistpanel.displayTablelist(solist[:,:-2],header)
+            tasklistpanel.displayTablelist(list[:,:-2],header)
         else:
             tasklistpanel.displayTablelist([], [])
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         tasklistpanel.listChoose_comb_change()
 
     def searchProjectNum(projectName,projectNum,projectSpec,fileName):
-        dataFilter,datafiltCol =excel.Screen(projectName,projectNum,projectSpec,fileName)
+        dataFilter,datafiltCol =data.Screen(projectName,projectNum,projectSpec,fileName)
         if fileName =="WaringInformation":
             if dataFilter.shape[0] != 0:
                 tasklistpanel.add_btn.setEnabled(False)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
                 addwarinf.displayTablelist([],[])
 
     def diswaringInformation():
-        Data = excel.getSourcedata('WaringInformation')
+        Data = data.getSourcedata('WaringInformation','')
         tasklistpanel.displayTablelist(Data.values,Data.columns.values)
 
     def addWarinformation(projectName,projectNum,projectSpec):
@@ -109,17 +109,36 @@ if __name__ == '__main__':
         addwarinf.search_btn.click()
 
     def delNumList(delList):
-        sourcedata = excel.getSourcedata('WaringInformation')
-        result =excel.deldata(sourcedata,delList)
+        sourcedata = data.getSourcedata('WaringInformation','')
+        result = data.deldata(sourcedata,delList)
 
     def addData(addData):
         # 处理pandas数据
-        excel.add_data(addData)
+        data.add_data(addData)
         # 显示
         diswaringInformation()
 
     def closeAddwindow():
         diswaringInformation()
+
+    def dispaly_tab_InsertData(appendRow,so_no):
+
+        # 根据SO判断年月
+        so_year = '20' + so_no[2:4]
+        so_moth = so_no[4:6]
+        soInformation = data.getSourcedata(fileName=so_year,sheetName=so_moth)
+        # 选取部分数据getSourcedata
+        insertData = soInformation[['SO号','成品料号','成品名称','成品规格']]
+        # 筛选数据，得到对应SO的订单信息
+        insertData = insertData[insertData['SO号'] == so_no]
+        # 删除多余信息（SO号）,并转化成list
+        insertData = insertData.iloc[:,1:].values[0]
+
+        # 二、提取警告信息
+        waringInformation = data.getSourcedata('WaringInformation','')
+        waringInformation = waringInformation[waringInformation['ProjectNum'] == insertData[0]]
+        waringStr = str(waringInformation['waringInformation'].values)[2:-2]
+        tasklistpanel.insert_display(appendRow,insertData,waringStr)
 
     #信号连接
     loginpanel.check_login_Btn_signal.connect(login)
@@ -129,6 +148,7 @@ if __name__ == '__main__':
     tasklistpanel.waring_btn_click_signal.connect(diswaringInformation)
     tasklistpanel.add_btn_click_signal.connect(addWarinformation)
     tasklistpanel.del_btn_click_signal.connect(delNumList)
+    tasklistpanel.display_tab_right_click_signal.connect(dispaly_tab_InsertData)
     addwarinf.addwindow_search_btn_click_signal.connect(searchProjectNum)
     addwarinf.addwindow_combit_btn_click_signal.connect(addData)
     addwarinf.addwindow_close_signal.connect(closeAddwindow)

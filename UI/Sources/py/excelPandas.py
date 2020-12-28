@@ -3,7 +3,7 @@ import numpy as np
 import os,re
 from datetime import datetime
 
-class excel_pandas(object):
+class dataAnalysis(object):
     def __init__(self,projectName,projectNum,projectSpec):
         self.projectName = projectName
         self.projectNum = projectNum
@@ -16,12 +16,19 @@ class excel_pandas(object):
         dataFilter = self.lookFordata(projectName,projectNum,projectSpec,sourceData)
         return dataFilter.values,dataFilter.columns.values
 
-    def getFilepath(self,fileName):
-        return self.io + '\\' + fileName + '.xls'
+    def getFilepath(self,fileName,sheetName):
+        if len(sheetName)>0:
+            return self.io + '\\so_Information\\' + fileName + '.xls'
+        else:
+            return self.io + '\\' + fileName + '.xls'
 
-    def getSourcedata(self,fileName):
-        filePath = self.getFilepath(fileName)
-        return pd.read_excel(filePath)
+    def getSourcedata(self,fileName,sheetName):
+        filePath = self.getFilepath(fileName,sheetName)
+        if len(sheetName)>0:                                           # 如果sheetName存在
+            return pd.read_excel(io = filePath,sheet_name=sheetName)
+        else:
+            return pd.read_excel(io = filePath)
+
 
     def lookFordata(self,projectName,projectNum,projectSpec,sourceData):
         ###################################################################################################################
@@ -143,7 +150,7 @@ if __name__ == '__main__':
                          'D': np.array([3] * 4, dtype='int32'),
                          'E': pd.Categorical(['test', 'train', 'test', 'train']),
                          'F': 'foo'})
-    print(df_1)
-    df2 = df_1.loc[[True, True, True, False]]
-    print('\n')
-    print(df2)
+    print(df_1[['D', 'E', 'F']])
+    print(df_1[df_1['E']=='test'])
+
+
