@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1275</width>
-    <height>859</height>
+    <width>1362</width>
+    <height>866</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -44,344 +44,6 @@
    <property name="spacing">
     <number>0</number>
    </property>
-   <item row="1" column="0">
-    <widget class="QWidget" name="Left_wid" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>25</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>25</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255)</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <property name="spacing">
-       <number>10</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>30</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="taskInformation_btn">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>25</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>订
-单
-信
-息</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="waring_btn">
-        <property name="maximumSize">
-         <size>
-          <width>25</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>注
-意
-事
-项</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pcbInformation_btn">
-        <property name="maximumSize">
-         <size>
-          <width>25</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>未
-下
-P
-C
-B
-订
-单</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>439</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="3" alignment="Qt::AlignBottom">
-    <widget class="QWidget" name="Waring_wid" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item alignment="Qt::AlignVCenter">
-       <widget class="QLabel" name="waring_labe">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>状态栏:</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="3">
-    <widget class="QWidget" name="Top_wid" native="true">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>30</height>
-      </size>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>5</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="newForm_btn">
-        <property name="styleSheet">
-         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
-        </property>
-        <property name="text">
-         <string>填写新表单</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="draft_btn">
-        <property name="styleSheet">
-         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
-        </property>
-        <property name="text">
-         <string>草稿</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="taskList_btn">
-        <property name="styleSheet">
-         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
-        </property>
-        <property name="text">
-         <string>待处理任务</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-        <property name="default">
-         <bool>false</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="historicalSen_btn">
-        <property name="styleSheet">
-         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
-        </property>
-        <property name="text">
-         <string>历史申请</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="historicalPro_btn">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>历史处理</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="lookFor_btn">
-        <property name="styleSheet">
-         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
-        </property>
-        <property name="text">
-         <string>业务查询</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="Form_btn">
-        <property name="styleSheet">
-         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
-        </property>
-        <property name="text">
-         <string>报表</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>612</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="3">
-    <widget class="QWidget" name="Web_wid" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>1200</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QWidget" name="Table_veiw_wid" native="true">
      <property name="sizePolicy">
@@ -918,6 +580,440 @@ B
      </layout>
     </widget>
    </item>
+   <item row="0" column="0" colspan="3">
+    <widget class="QWidget" name="Top_wid" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>30</height>
+      </size>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>5</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="newForm_btn">
+        <property name="styleSheet">
+         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
+        </property>
+        <property name="text">
+         <string>填写新表单</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="draft_btn">
+        <property name="styleSheet">
+         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
+        </property>
+        <property name="text">
+         <string>草稿</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="taskList_btn">
+        <property name="styleSheet">
+         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
+        </property>
+        <property name="text">
+         <string>待处理任务</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="historicalSen_btn">
+        <property name="styleSheet">
+         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
+        </property>
+        <property name="text">
+         <string>历史申请</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="historicalPro_btn">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>历史处理</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="lookFor_btn">
+        <property name="styleSheet">
+         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
+        </property>
+        <property name="text">
+         <string>业务查询</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="Form_btn">
+        <property name="styleSheet">
+         <string notr="true">fontcolor:rgb(0, 170, 255)</string>
+        </property>
+        <property name="text">
+         <string>报表</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>612</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QWidget" name="Web_wid" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>1200</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QWidget" name="Left_wid" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>25</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>25</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255)</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>30</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="taskInformation_btn">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>订
+单
+信
+息</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="waring_btn">
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>注
+意
+事
+项</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pcbInformation_btn">
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>未
+下
+P
+C
+B
+订
+单</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="flat">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>439</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="QWidget" name="Waring_wid" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>40</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>40</height>
+      </size>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="spacing">
+       <number>8</number>
+      </property>
+      <property name="leftMargin">
+       <number>10</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>10</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="waring_labe">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>状态栏:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="combit_rad">
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>确认</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="comeback_rad">
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>退回</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comback_comb">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>150</width>
+          <height>30</height>
+         </size>
+        </property>
+        <item>
+         <property name="text">
+          <string>请选择退回人员</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="taskCombit_btn">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>50</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>提交</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
@@ -1096,7 +1192,7 @@ B
    <slot>listChoose_comb_change()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1124</x>
+     <x>1285</x>
      <y>56</y>
     </hint>
     <hint type="destinationlabel">
@@ -1112,7 +1208,7 @@ B
    <slot>refreshWebtext()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1274</x>
+     <x>1435</x>
      <y>56</y>
     </hint>
     <hint type="destinationlabel">
@@ -1133,7 +1229,7 @@ B
     </hint>
     <hint type="destinationlabel">
      <x>0</x>
-     <y>421</y>
+     <y>352</y>
     </hint>
    </hints>
   </connection>
@@ -1144,12 +1240,12 @@ B
    <slot>search_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1084</x>
-     <y>93</y>
+     <x>1307</x>
+     <y>95</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1281</x>
-     <y>386</y>
+     <x>1199</x>
+     <y>352</y>
     </hint>
    </hints>
   </connection>
@@ -1160,11 +1256,11 @@ B
    <slot>add_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1258</x>
-     <y>116</y>
+     <x>1485</x>
+     <y>122</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1278</x>
+     <x>1199</x>
      <y>331</y>
     </hint>
    </hints>
@@ -1176,12 +1272,12 @@ B
    <slot>del_btn_click()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1269</x>
-     <y>147</y>
+     <x>1485</x>
+     <y>155</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1279</x>
-     <y>486</y>
+     <x>1199</x>
+     <y>352</y>
     </hint>
    </hints>
   </connection>
@@ -1192,12 +1288,12 @@ B
    <slot>selectAll()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1174</x>
-     <y>85</y>
+     <x>1392</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1180</x>
-     <y>170</y>
+     <x>1174</x>
+     <y>270</y>
     </hint>
    </hints>
   </connection>
@@ -1208,12 +1304,60 @@ B
    <slot>inverse_rad_checked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1233</x>
-     <y>84</y>
+     <x>1446</x>
+     <y>96</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1282</x>
-     <y>556</y>
+     <x>1199</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>combit_rad</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>combit_rad_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1258</x>
+     <y>777</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1252</x>
+     <y>794</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comeback_rad</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>comeback_rad_checked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1346</x>
+     <y>776</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1343</x>
+     <y>794</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>taskCombit_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>TaskListWindow</receiver>
+   <slot>combit_btn_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1487</x>
+     <y>773</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1490</x>
+     <y>800</y>
     </hint>
    </hints>
   </connection>
@@ -1236,5 +1380,8 @@ B
   <slot>add_btn_click()</slot>
   <slot>del_btn_click()</slot>
   <slot>inverse_rad_checked()</slot>
+  <slot>combit_rad_checked()</slot>
+  <slot>comeback_rad_checked()</slot>
+  <slot>combit_btn_click()</slot>
  </slots>
 </ui>
