@@ -276,6 +276,30 @@ class WebText(object):                          # 爬虫技术类
 
         return getsospec
 
+    def getbacklist(self,url,pids):
+        backlist= []
+        headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
+                   'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36 TheWorld 6', }
+        for pid in pids:
+            backlistrow = []
+            try:
+                resp = requests.get(url + pid, headers=headers, cookies=self.cookies, timeout=30)
+                # 如果状态不是200，引发HTTPError异常
+                resp.raise_for_status()
+                resp.encoding = resp.apparent_encoding
+                soup = BeautifulSoup(resp.text, "html.parser")
+                for tr in soup.find('tr', attrs={'class': 'ListItemRow'}).parent:
+                    if isinstance(tr, bs4.element.Tag):
+                        for td in tr.children:
+                            if isinstance(td, bs4.element.Tag) and td.string is not None:
+                                if re.search(r'^[a-zA-Z]+\d*$', td.string):
+                                    backlistrow.append(td.string)
+                backlist.append(backlistrow)
+            except:
+                print("请求超时")
+                backlist = []
+        return backlist
+
 class PDF():                                # 文件操作，文件（PDF）下载
 
     def __init__(self):

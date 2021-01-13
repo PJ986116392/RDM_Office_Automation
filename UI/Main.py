@@ -4,6 +4,7 @@ from UI.Sources.py.excelPandas import dataAnalysis
 from UI.Sources.py.addwarinformationPanel import Addwarinf
 from PyQt5.Qt import *
 from Parsing_RDM import WebText
+import numpy as np
 
 if __name__ == '__main__':
     import sys
@@ -18,12 +19,14 @@ if __name__ == '__main__':
         'login': 'http://rdm.toptech-developer.com:81/BPM/Home/Login.aspx?ReturnUrl=/bpm/TaskList/Default.aspx',
         'taskList': 'http://rdm.toptech-developer.com:81/bpm/TaskList/Default.aspx',
         'nextweb':'http://rdm.toptech-developer.com:81/bpm/XMLService/DataProvider.aspx',
+        'backlist':'http://rdm.toptech-developer.com:81/bpm/Common/RecedeBackSelStep.aspx?pid=',
         'newTask': '',
     }
     intranetUrl = {
         'login': 'http://172.168.5.151:81/bpm/Home/Login.aspx',
         'taskList': 'http://172.168.5.151:81/bpm/PostRequest/Default.aspx',
         'nextweb':'http://172.168.5.151:81/bpm/XMLService/DataProvider.aspx',
+        'backlist': 'http://172.168.5.151:81/bpm/Common/RecedeBackSelStep.aspx?pid=',
         'newTask': '',
     }
     headers = {'Referer': 'http://rdm.toptech-developer.com:81/bpm/PostRequest/Default.aspx',
@@ -52,9 +55,10 @@ if __name__ == '__main__':
         # 生产指示单需要保存订单详细信息
         if listChoose_comb_Text == "生产指示单":
             soList = rdmWeb.getSoinformation(extranetlUrl['nextweb'],pid)
+            back_list = rdmWeb.getbacklist(extranetlUrl['backlist'],pid)
             # 保存记录订单信息
             if len(soList)>0:
-                data.solist_to_excel(soList)
+                data.solist_to_excel(soList,back_list)
             # 显示信息
         if list.shape[0] !=0:
             header = ['流水号', '流程名称', '所有人', '发起时间','当前步骤','摘要信息']
