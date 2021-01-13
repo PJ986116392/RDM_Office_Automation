@@ -135,10 +135,8 @@ class dataAnalysis(object):
         # [['bs08', 'linda', 'tongfan'], ['bs08', 'linda', 'tongfan'], ['bs09', 'bill', 'liujie'],
         #  ['bs09', 'bill', 'tongfan'], ['bs01', 'linda', 'huangrenwang'], ['bs01', 'linda', 'huangrenwang'],
         #  ['bs01', 'linda']]
-        # A = np.array(list)
-        # B = np.array(backlist)
-        # if A.shape[0] == B.shape[0]:                # 如果两者行数相等
-            # 获取当前文件夹内年份excel文件名信息
+
+        # 获取当前文件夹内年份excel文件名信息
         dirPath = self.io + '\\' + 'so_Information'
         if not os.path.exists(dirPath):  # 如果保存文件夹不存在就创建文件夹
             os.makedirs(dirPath)
@@ -148,50 +146,86 @@ class dataAnalysis(object):
             index = file.rfind('.')
             file = file[:index]
             fileList.append(file)
-        # 获取当前订单年月
-        Col = ['客户代码','附件名称','SO号','业务备注','制单时间','制单人员','业务员','成品名称','成品料号','成品规格','订单数量','当前步骤','PID']
-        # for i in range(np.array(backlist).shape[1]):
-        #     Col.append("退回人员" + str(i+1))
-        # List = np.hstack((A, B))                # 水平合并
-        data = pd.DataFrame(np.array(list),columns=Col)
-        data['制单时间'] = pd.to_datetime(data['制单时间'])
 
-        # 将数据按照年，月分类
-        Year_moth = []
-        for index,Date in enumerate(data['制单时间']):
-            if Date.strftime("%Y-%m") not in Year_moth:
-                Year_moth.append(Date.strftime("%Y-%m"))
-            data.loc[index,'年月']=Date.strftime("%Y-%m")
-        for Date in data['制单时间']:
-            saveData = data[data['制单时间'] == Date]
-            Year = Date.strftime("%Y")
-            Moth = Date.strftime("%m")
-            fileName = dirPath + '\\' + Year + '.xls'
-            if Year not in fileList:            # 年份excel文件不存在
-                pd.DataFrame(saveData).to_excel(fileName,sheet_name = Moth,index=False)
-            else:
-                file = pd.ExcelFile(fileName)
-                if Moth not in file.sheet_names:    # 年份excel在，但是Moth不在
-                    pd.DataFrame(saveData).to_excel(fileName, sheet_name=Moth,index=False)
-                else:                               # 对应年份，月份 存在
-                    openData = pd.read_excel(fileName,Moth)
-                    # 当前需要保存的数据中是否有重复so
-                    for so in saveData['SO号']:
-                        if so in openData['SO号'].values:                               # 当前保存的so在已有excel中
-                            saveData = saveData[saveData['SO号'] != so]
-                    if not saveData.empty:
-                        openData = openData.append(saveData,ignore_index=True)       # ignore_index=True,表示不按原来的索引，从0开始自动递增
-                        pd.DataFrame(openData).to_excel(fileName, sheet_name=Moth,index=False)
+        # 获取合并当前订单数据
+        Col = ['客户代码','附件名称','SO号','业务备注','制单时间','制单人员','业务员','成品名称','成品料号','成品规格','订单数量','当前步骤','PID']
+        for i in range(np.array(backlist).shape[1]):
+            Col.append("退回人员" + str(i+1))
+        merge_data = self.merge_list(list,backlist,aix=1)
+        Sourcedata = pd.DataFrame(merge_data,columns=Col)
+        Sourcedata['制单时间'] = pd.to_datetime(Sourcedata['制单时间'])
+
+        # 将数据按照年分类保存
+        Years = []
+        for index,Date in enumerate(Sourcedata['制单时间']):
+            if Date.strftime("%Y") not in Years:
+                Years.append(Date.strftime("%Y"))
+            Sourcedata.loc[index,'年']=Date.strftime("%Y")
+        for year in Years:
+            saveData = Sourcedata[Sourcedata['年'] == year]
+            saveData.pop('年')
+            fileName = dirPath + '\\' + year + '.xls'
+            if year not in fileList:            # 年份excel文件不存在
+                pd.DataFrame(saveData).to_excel(fileName, index=False)
+            else:                               # 年份excel文件存在
+                initdata = pd.read_excel(fileName)
+                # 当前需要保存的数据中是否有重复so
+                for so in saveData['SO号']:
+                    if so in initdata['SO号'].values:  # 当前保存的so在已有excel中
+                        saveData = saveData[saveData['SO号'] != so]
+                if not saveData.empty:
+                    # 两个pd 去重复，仅仅保留新增的数据
+                    # https://www.cnblogs.com/johnyang/p/12849351.html
+                    intidata_col = initdata.columns
+                    saveData_col = saveData.columns
+                    saveData_col = saveData_col.append(intidata_col)
+                    saveData_col = saveData_col.append(intidata_col)
+                    dif_col = saveData_col.drop_duplicates(keep=False)
+
+                    if len(dif_col.values)>0:           # 有新增退回人员
+                        for back in dif_col:
+                            pass
+                    else:                               # 无新增退回人员
+                        initdata = initdata.append(saveData, ignore_index=True)  # ignore_index=True,表示不按原来的索引，从0开始自动递增
+                        pd.DataFrame(initdata).to_excel(fileName, index=False)
+
+    def merge_list(self,list1,list2,aix):
+        A = np.array(list1)
+        B = np.array(list2)
+        if A.shape[0] == B.shape[0] and aix == 1:                # 如果两者行数相等
+            C = np.hstack(A,B)
+            return C
+        elif A.shape[1] == B.shape[1] and aix == 0:
+            C = np.vstack(A,B)
+            return C
+        else:
+            print('合并的两个数列维度行列不能对应上')
 
 if __name__ == '__main__':
-    print('通过字典创建DataFrame:')
-    df_1 = pd.DataFrame({'A': 1.0,
-                         'B': pd.Timestamp(2019, 8, 19),
-                         'C': pd.Series(1, index=list(range(4)), dtype='float32'),
-                         'D': np.array([3] * 4, dtype='int32'),
-                         'E': pd.Categorical(['test', 'train', 'test', 'train']),
-                         'F': 'foo'})
-    print(df_1[['D', 'E', 'F']])
-    print(df_1[df_1['E']=='test'])
+    # print('通过字典创建DataFrame:')
+    # df_1 = pd.DataFrame({'A': 1.0,
+    #                      'B': pd.Timestamp(2019, 8, 19),
+    #                      'C': pd.Series(1, index=list(range(4)), dtype='float32'),
+    #                      'D': np.array([3] * 4, dtype='int32'),
+    #                      'E': pd.Categorical(['test', 'train', 'test', 'train']),
+    #                      'F': 'foo'})
+    # # print(df_1[['D', 'E', 'F']])
+    # print(df_1.columns)
+    # df_1.pop('E')
+    # print(df_1.columns)
+    # # print(df_1[df_1['E']=='test'])
 
+    # a = pd.Series(['客户代码','附件名称','SO号','back1','back2'])
+    # b = pd.Series(['客户代码', '附件名称', 'SO号', 'back1', 'back3'])
+    # b = b.append(a)
+    # b = b.append(a)
+    # dif = b.drop_duplicates(keep=False)
+    # if len(dif.values)>0 :
+    #     print(dif)
+
+    data_a = {'state': [1, 1, 2], 'pop': ['a', 'b', 'c']}
+    data_b = {'state': [1, 2, 3], 'pop': ['b', 'c', 'd'],'C':['AAAA','AAAAA']}
+    a = pd.DataFrame(data_a)
+    b = pd.DataFrame(data_b)
+    print(a.append(b))
 
