@@ -126,11 +126,9 @@ if __name__ == '__main__':
         diswaringInformation()
 
     def dispaly_tab_InsertData(appendRow,so_no):
-
         # 根据SO判断年月
         so_year = '20' + so_no[2:4]
-        so_moth = so_no[4:6]
-        soInformation = data.getSourcedata(fileName=so_year,sheetName=so_moth)
+        soInformation = data.getSourcedata(so_year,'sheet1')
         # 选取部分数据getSourcedata
         insertData = soInformation[['SO号','成品料号','成品名称','成品规格']]
         # 筛选数据，得到对应SO的订单信息
@@ -141,7 +139,9 @@ if __name__ == '__main__':
         # 二、提取警告信息
         waringInformation = data.getSourcedata('WaringInformation','')
         waringInformation = waringInformation[waringInformation['ProjectNum'] == insertData[0]]
+        print(waringInformation)
         waringStr = str(waringInformation['waringInformation'].values)[2:-2]
+
         tasklistpanel.insert_display(appendRow,insertData,waringStr)
 
     #信号连接

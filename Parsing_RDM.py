@@ -295,6 +295,20 @@ class WebText(object):                          # 爬虫技术类
                                 if re.search(r'^[a-zA-Z]+\d*$', td.string):
                                     backlistrow.append(td.string)
                 backlist.append(backlistrow)
+                # 数据转化，存在部分数值缺失，用‘’填充
+                # 获取最大的行数，列数
+                max_cols = 0
+                for li in backlist:
+                    if len(li) > max_cols:
+                        max_cols = len(li)
+                rows = len(backlist)
+                # 填充‘’
+                for row in range(rows):
+                    col = len(backlist[row])
+                    if col < max_cols:
+                        for i in range(max_cols - col):
+                            backlist[row].append('')
+
             except:
                 print("请求超时")
                 backlist = []

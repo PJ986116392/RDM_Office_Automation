@@ -342,7 +342,6 @@ class TaskList(QWidget,Ui_TaskListWindow):
         self.comback_comb.setEnabled(True)
         # 获取退回人员名单
 
-
     def combit_btn_click(self):
         if self.combit_rad.isCheckable():
             # 比对技术确认书
@@ -350,7 +349,6 @@ class TaskList(QWidget,Ui_TaskListWindow):
         else:
             # 提交退回人
             pass
-
 
     # 其他逻辑补充
     def displayTablelist(self,displayList,head):
