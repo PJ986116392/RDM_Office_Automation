@@ -85,7 +85,7 @@ class dataAnalysis(object):
 
     def deldata(self,sourceData,delList):
         resultData = sourceData[~sourceData['ProjectNum'].isin(delList)]
-        filePtah = self.getFilepath('WaringInformation')
+        filePtah = self.getFilepath('WaringInformation','')
         resultData.to_excel(filePtah,sheet_name="WaringInformation",index=False)
 
     def add_data(self,addData):

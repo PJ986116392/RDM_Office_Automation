@@ -130,19 +130,21 @@ if __name__ == '__main__':
         so_year = '20' + so_no[2:4]
         soInformation = data.getSourcedata(so_year,'sheet1')
         # 选取部分数据getSourcedata
-        insertData = soInformation[['SO号','成品料号','成品名称','成品规格']]
+        insertData = soInformation[['SO号','成品料号','成品名称','成品规格','附件名称']]
         # 筛选数据，得到对应SO的订单信息
         insertData = insertData[insertData['SO号'] == so_no]
         # 删除多余信息（SO号）,并转化成list
-        insertData = insertData.iloc[:,1:].values[0]
+        pdfs = insertData.iloc[:,-1].values[0]
+        insertData = insertData.iloc[:,1:-1].values[0]
 
         # 二、提取警告信息
         waringInformation = data.getSourcedata('WaringInformation','')
         waringInformation = waringInformation[waringInformation['ProjectNum'] == insertData[0]]
-        print(waringInformation)
         waringStr = str(waringInformation['waringInformation'].values)[2:-2]
 
-        tasklistpanel.insert_display(appendRow,insertData,waringStr)
+        if len(waringStr) == 0 :
+            waringStr = str(pdfs)
+        tasklistpanel.insert_display(appendRow, insertData, waringStr)
 
     #信号连接
     loginpanel.check_login_Btn_signal.connect(login)
